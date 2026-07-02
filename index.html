@@ -1,0 +1,2321 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>T-Network - Лента</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Global base styles for accurate copy */
+        * {
+            box-sizing: border-box !important;
+            font-family: Segoe UI, Helvetica, Arial, sans-serif !important;
+        }
+
+        body {
+            background-color: #f0f2f5 !important;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Main layout container */
+        .main-layout {
+            display: flex;
+            justify-content: space-between;
+            max-width: 100% !important;
+            margin: 0 auto;
+            padding: 16px 8px 0 8px !important;
+            margin-top: 56px; /* Offset under navbar */
+        }
+
+        /* LEFT SIDEBAR (FIXED) */
+        .left-sidebar {
+            width: 280px !important;
+            flex-shrink: 0 !important;
+            padding: 0 8px !important;
+        }
+
+        .menu-item {
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+            padding: 8px 12px !important;
+            border-radius: 8px !important;
+            color: #050505 !important;
+            font-size: 15px !important;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .menu-item:hover {
+            background-color: #e4e6eb !important;
+        }
+
+        .menu-item .avatar-mini-placeholder,
+        .menu-item .menu-emoji-icon {
+            font-size: 20px !important;
+            width: 36px !important;
+            height: 36px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            background: #e4e6eb;
+            border-radius: 50% !important;
+            flex-shrink: 0 !important;
+        }
+
+        /* CENTRAL FEED */
+        .feed-container {
+            flex-grow: 1 !important;
+            max-width: 590px !important;
+            margin: 0 auto !important;
+        }
+
+        /* FIXED STORIES BLOCK */
+        .stories-container {
+            display: flex !important;
+            gap: 8px !important;
+            margin-bottom: 24px !important;
+            padding: 4px 0 !important;
+            width: 100% !important;
+        }
+
+        .story-card {
+            position: relative !important;
+            width: 112px !important;
+            height: 200px !important;
+            border-radius: 10px !important;
+            overflow: hidden !important;
+            flex-shrink: 0 !important;
+            background: #e4e6eb;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;
+            cursor: pointer;
+        }
+
+        .story-bg {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background-size: cover !important;
+            background-position: center !important;
+            z-index: 1 !important;
+            transition: transform 0.3s;
+        }
+
+        .story-card:hover .story-bg {
+            transform: scale(1.03);
+        }
+
+        .story-avatar-img {
+            position: absolute !important;
+            top: 12px !important;
+            left: 12px !important;
+            width: 36px !important;
+            height: 36px !important;
+            border-radius: 50% !important;
+            object-fit: cover !important;
+            border: 4px solid #1877f2 !important;
+            z-index: 2 !important;
+        }
+
+        .story-footer {
+            position: absolute !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8)) !important;
+            padding: 8px !important;
+            color: #fff !important;
+            font-size: 13px !important;
+            font-weight: 600 !important;
+            z-index: 2 !important;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Post boundaries */
+        .post {
+            background: #fff;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px !important;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            overflow: hidden !important;
+        }
+
+        .post-attached-img {
+            width: 100% !important;
+            max-height: 450px !important;
+            object-fit: cover !important;
+            border-radius: 4px !important;
+            display: block !important;
+            margin-top: 12px !important;
+        }
+
+        .avatar-mini-img {
+            width: 40px !important;
+            height: 40px !important;
+            border-radius: 50% !important;
+            object-fit: cover !important;
+            flex-shrink: 0 !important;
+            display: block !important;
+        }
+
+        /* RIGHT SIDEBAR */
+        .right-sidebar {
+            width: 280px !important;
+            flex-shrink: 0 !important;
+            padding: 0 8px !important;
+        }
+
+        .contact-item {
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+            padding: 8px !important;
+            border-radius: 8px !important;
+            margin-bottom: 2px !important;
+            cursor: pointer;
+        }
+
+        .contact-item:hover {
+            background-color: #e4e6eb !important;
+        }
+
+        .contact-avatar-wrapper {
+            position: relative !important;
+            width: 36px !important;
+            height: 36px !important;
+            flex-shrink: 0 !important;
+        }
+
+        .contact-avatar-img {
+            width: 36px !important;
+            height: 36px !important;
+            border-radius: 50% !important;
+            object-fit: cover !important;
+            display: block !important;
+        }
+
+        .online-badge {
+            position: absolute !important;
+            bottom: 0 !important;
+            right: 0 !important;
+            width: 10px !important;
+            height: 10px !important;
+            background-color: #31a24c !important;
+            border: 2px solid #fff !important;
+            border-radius: 50% !important;
+        }
+
+        /* CHAT WINDOW STYLES */
+        .chat-window {
+            position: fixed !important;
+            bottom: 0 !important;
+            right: 80px !important;
+            width: 328px !important;
+            height: 460px !important;
+            background: #fff !important;
+            border-radius: 8px 8px 0 0 !important;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15), 0 8px 10px rgba(0, 0, 0, 0.1) !important;
+            display: flex !important;
+            flex-direction: column !important;
+            z-index: 10000 !important;
+            border: 1px solid #ccd0d5 !important;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: #fff !important;
+            color: #050505 !important;
+            padding: 8px 12px !important;
+            font-size: 15px !important;
+            border-bottom: 1px solid #e4e6eb !important;
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+        }
+
+        .chat-header-user {
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            cursor: pointer;
+        }
+
+        .chat-header-avatar {
+            width: 32px !important;
+            height: 32px !important;
+            border-radius: 50% !important;
+            object-fit: cover !important;
+        }
+
+        .chat-title { font-weight: 600 !important; font-size: 14px !important; }
+        .chat-status { font-size: 11px !important; color: #65676b !important; }
+
+        .chat-controls button {
+            background: none !important;
+            border: none !important;
+            font-size: 18px !important;
+            color: #0084ff !important;
+            cursor: pointer !important;
+        }
+
+        .chat-messages {
+            flex-grow: 1 !important;
+            padding: 12px !important;
+            overflow-y: auto !important;
+            background: #fff !important;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .chat-bubble-gray {
+            background-color: #f0f2f5 !important;
+            color: #050505 !important;
+            padding: 8px 12px !important;
+            border-radius: 16px !important;
+            font-size: 13.5px !important;
+            max-width: 85% !important;
+            align-self: flex-start !important;
+        }
+
+        .chat-options {
+            padding: 8px 12px !important;
+            background: #fff !important;
+            border-top: 1px solid #e4e6eb !important;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .chat-options button {
+            background-color: #f0f2f5 !important;
+            border: none !important;
+            border-radius: 18px !important;
+            padding: 8px 12px !important;
+            color: #050505 !important;
+            font-size: 13px !important;
+            font-weight: 500 !important;
+            text-align: left !important;
+            cursor: pointer !important;
+            transition: background 0.2s;
+            width: 100%;
+        }
+
+        .chat-options button:hover {
+            background-color: #e4e6eb !important;
+            color: #0084ff !important;
+        }
+
+        /* FULLSCREEN MESSENGER */
+        .fullscreen-messenger {
+            display: flex;
+            height: calc(100vh - 96px);
+            margin-top: 96px;
+            background: #fff;
+            overflow: hidden;
+        }
+
+        .msger-sidebar {
+            width: 360px;
+            border-right: 1px solid #e4e6eb;
+            display: flex;
+            flex-direction: column;
+            padding: 12px;
+            flex-shrink: 0;
+        }
+        .msger-sidebar-header h1 { font-size: 24px; margin: 0; font-weight: bold; }
+        .msger-search {
+            background: #f0f2f5; border-radius: 50px; padding: 10px; display: flex; align-items: center; margin: 12px 0;
+        }
+        .msger-search input { background: none; border: none; outline: none; width: 100%; margin-left: 8px; }
+
+        .chat-list-item {
+            display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 8px; background: #eaf3ff;
+        }
+        .chat-list-avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; }
+
+        .msger-main { flex-grow: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; background: #fff; }
+        .msger-header {
+            padding: 12px 24px; border-bottom: 1px solid #e4e6eb; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+        }
+        .msger-header-user { display: flex; align-items: center; gap: 12px; }
+        .msger-header-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .msger-header-name { display: inline-flex; align-items: center; gap: 7px; font-size: 16px; font-weight: 500; line-height: 1.15; }
+        .msger-header-name::after { content: ''; width: 9px; height: 9px; border-radius: 50%; background: #31a24c; box-shadow: 0 0 0 2px #fff; flex: 0 0 auto; }
+        .msger-header-status { color: #8a8d91; font-size: 12px; line-height: 1.1; margin-top: 3px; font-weight: 400; }
+
+        .msger-chat-area {
+            flex-grow: 1;
+            min-height: 0;
+            padding: 24px;
+            overflow-y: auto;
+            scrollbar-width: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .msger-chat-area::-webkit-scrollbar { display: none; }
+
+        .msg-row { display: flex; width: 100%; }
+        .msg-row.incoming { justify-content: flex-start; }
+        .msg-row.outgoing { justify-content: flex-start; flex-direction: row-reverse; }
+
+        .msg-bubble { max-width: 65%; padding: 10px 16px; border-radius: 18px; font-size: 15px; }
+        .incoming .msg-bubble { background-color: #f0f2f5; color: #050505; }
+        .outgoing .msg-bubble { background: linear-gradient(135deg, #8a2be2, #0084ff); color: #fff; }
+
+        .msger-input-bar {
+            padding: 12px 24px; display: flex; align-items: center; gap: 16px; border-top: 1px solid #e4e6eb; flex-shrink: 0;
+        }
+        .input-wrapper {
+            flex-grow: 1; background: #f0f2f5; border-radius: 20px; padding: 8px 16px; display: flex; align-items: center;
+        }
+        .input-wrapper input { background: none; border: none; outline: none; width: 100%; font-size: 15px; }
+
+        .response-choice {
+            width: 100%;
+            border: 1px solid rgba(0, 132, 255, 0.45);
+            border-radius: 20px;
+            padding: 12px 18px;
+            background: linear-gradient(180deg, #f8fbff 0%, #eaf4ff 100%);
+            color: #0b233f;
+            font-size: 14px;
+            font-weight: 700;
+            text-align: left;
+            cursor: pointer;
+            box-shadow: 0 0 0 0 rgba(0, 132, 255, 0.35), 0 8px 24px rgba(0, 132, 255, 0.14);
+            animation: responsePulse 1.8s ease-in-out infinite;
+        }
+        .response-choice:hover {
+            background: #e0f0ff;
+            border-color: rgba(0, 132, 255, 0.75);
+            transform: translateY(-1px);
+        }
+        @keyframes responsePulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0, 132, 255, 0.34), 0 8px 24px rgba(0, 132, 255, 0.16); }
+            50% { box-shadow: 0 0 0 10px rgba(0, 132, 255, 0), 0 10px 30px rgba(0, 132, 255, 0.34); }
+        }
+
+        /* DETECTIVE DASHBOARD INTERFACE */
+        .fake-link {
+            color: #0084ff !important;
+            text-decoration: underline !important;
+            cursor: pointer !important;
+            font-weight: 600 !important;
+        }
+        .fake-link:hover { color: #0056b3 !important; }
+
+        .detective-dashboard {
+            display: flex;
+            height: calc(100vh - 40px);
+            margin-top: 40px;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            overflow: hidden;
+        }
+        .dash-sidebar {
+            width: 400px;
+            border-right: 2px solid #2d2d2d;
+            display: flex;
+            flex-direction: column;
+            padding: 16px;
+            gap: 16px;
+            overflow-y: auto;
+            background: #222;
+        }
+        .dash-section {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            padding: 12px;
+        }
+        .dash-section h3 {
+            margin: 0 0 8px 0;
+            font-size: 14px;
+            text-transform: uppercase;
+            color: #ffcc00;
+            border-bottom: 1px solid #3a3a3a;
+            padding-bottom: 4px;
+        }
+        .dash-list { margin: 0; padding-left: 20px; font-size: 13px; line-height: 1.6; }
+        .dash-notes {
+            width: 100%; height: 120px; background: #111; color: #fff;
+            border: 1px solid #444; border-radius: 4px; padding: 8px;
+            resize: none; font-size: 13px;
+        }
+        .dash-map-area {
+            flex-grow: 1;
+            background: #111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        #detective-map {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        /* Dark popup stylings */
+        .leaflet-popup-content-wrapper {
+            background: #2a2a2a !important;
+            color: #e0e0e0 !important;
+            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            font-family: Segoe UI, sans-serif !important;
+        }
+        .leaflet-popup-tip {
+            background: #2a2a2a !important;
+            border: 1px solid #3a3a3a;
+        }
+        .leaflet-popup-content code {
+            background: #111;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #ffcc00;
+        }
+
+        /* BROWSER TABS DESIGN (FIXED VNESTENNOST) */
+        .browser-tabs {
+            display: flex;
+            background: #1e1e1e;
+            padding: 8px 8px 0 8px;
+            border-bottom: 2px solid #2d2d2d;
+            gap: 4px;
+            font-family: 'Segoe UI', sans-serif;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10200; /* Tabs sit securely on top */
+            height: 40px;
+        }
+
+        .b-tab {
+            padding: 8px 16px;
+            color: #888;
+            background: #141414;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s, color 0.2s;
+            border: 1px solid transparent;
+            height: 32px;
+            display: flex;
+            align-items: center;
+        }
+
+        .b-tab:hover {
+            background: #252525;
+            color: #ddd;
+        }
+
+        .b-tab.active {
+            background: #fff;
+            color: #000;
+            font-weight: bold;
+            border: 1px solid #2d2d2d;
+            border-bottom: 1px solid #fff;
+        }
+
+        /* Shift content down for tabs + navbar */
+        .navbar {
+            top: 40px !important;
+        }
+        /* Лента новостей */
+#screen-feed {
+    margin-top: 96px !important; /* 40px вкладки + 56px навбар */
+}
+
+/* Мессенджер */
+#screen-messenger {
+    margin-top: 96px !important;
+    height: calc(100vh - 96px) !important;
+}
+
+/* Кабинет детектива */
+#screen-detective,
+#screen-evidence,
+#screen-suspects,
+#screen-product {
+    margin-top: 40px !important;
+}
+
+        .somnio-page { height: calc(100vh - 40px); margin-top: 40px; background: #f3f7fb; color: #111; overflow-y: auto; }
+        .somnio-browser-bar { height: 54px; background: #26313d; color: #fff; display: flex; align-items: center; gap: 18px; padding: 0 22px; font-size: 22px; position: sticky; top: 0; z-index: 2; }
+        .somnio-url { flex: 1; max-width: 720px; background: rgba(255,255,255,.13); border-radius: 24px; padding: 9px 18px; font-size: 15px; }
+        .somnio-nav { background: rgba(255,255,255,.9); border-bottom: 1px solid #cfd8e3; display: flex; align-items: center; justify-content: space-between; padding: 18px 44px; }
+        .somnio-brand strong { font-size: 24px; display: block; }
+        .somnio-brand span { font-size: 14px; color: #3f4750; }
+        .somnio-links { display: flex; gap: 28px; font-size: 15px; }
+        .somnio-content { max-width: 1120px; margin: 0 auto; padding: 34px 46px 44px; }
+        .somnio-hero { display: grid; grid-template-columns: 260px 1fr; gap: 56px; align-items: start; }
+        .somnio-ampoule { height: 470px; border-radius: 120px 120px 42px 42px; border: 2px solid rgba(120,130,140,.45); background: linear-gradient(90deg, rgba(255,255,255,.1), rgba(255,255,255,.82) 35%, rgba(195,210,222,.35) 70%, rgba(255,255,255,.35)); box-shadow: inset 0 0 26px rgba(255,255,255,.85), 0 22px 55px rgba(74,94,112,.18); position: relative; margin: 70px auto 0; width: 95px; }
+        .somnio-ampoule::before { content: ''; position: absolute; left: 26px; top: -70px; width: 42px; height: 98px; border-radius: 28px 28px 8px 8px; border: 2px solid rgba(120,130,140,.45); background: rgba(255,255,255,.55); }
+        .somnio-label { position: absolute; left: 12px; right: 12px; top: 170px; bottom: 54px; border-radius: 8px; background: rgba(255,255,255,.72); writing-mode: vertical-rl; text-align: center; font-weight: 800; letter-spacing: .04em; padding: 16px 0; }
+        .somnio-title h1 { font-size: 48px; margin: 0 0 6px; letter-spacing: 0; }
+        .somnio-title h2 { font-size: 25px; font-weight: 400; margin: 0 0 22px; }
+        .somnio-title p { font-size: 18px; line-height: 1.48; max-width: 640px; }
+        .somnio-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px 64px; border-top: 1px solid #aab6c2; border-bottom: 1px solid #aab6c2; padding: 24px 0; margin: 28px 0; }
+        .somnio-grid h3, .somnio-buy h3, .somnio-contacts h3 { margin: 0 0 12px; font-size: 18px; }
+        .somnio-grid li { margin: 9px 0; }
+        .somnio-warning { display: flex; gap: 28px; align-items: center; border: 1px solid #aab6c2; border-radius: 6px; padding: 24px; margin: 26px 0; background: rgba(255,255,255,.55); }
+        .somnio-warning-icon { width: 78px; height: 78px; border: 3px solid #111; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 46px; }
+        .somnio-buy { border-top: 1px solid #aab6c2; padding-top: 24px; }
+        .somnio-contacts { border-top: 1px solid #aab6c2; margin-top: 32px; padding-top: 30px; display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 42px; }
+        .somnio-contact-card { line-height: 1.65; }
+        .somnio-share-wrap { border-top: 1px solid #aab6c2; margin-top: 28px; padding: 24px 0 4px; display: flex; justify-content: center; }
+        .somnio-share-btn { border: 0; border-radius: 999px; padding: 15px 28px; background: linear-gradient(135deg, #eaf6ff, #cceaff); color: #0a4372; font-weight: 800; font-size: 15px; cursor: pointer; box-shadow: 0 0 0 0 rgba(86,178,255,.42), 0 14px 34px rgba(30,130,210,.2); animation: responsePulse 1.8s ease-in-out infinite; }
+        .somnio-share-btn.sent { background: #d7f5df; color: #145523; animation: none; }
+        .email-screenshot { margin-top: 8px; border: 1px solid #c7d0dd; border-radius: 10px; background: #fff; overflow: hidden; color: #1a1a1a; font-size: 13px; }
+        .email-screenshot-head { background: #eef3f8; padding: 8px 10px; border-bottom: 1px solid #d7dee7; font-weight: 700; }
+        .email-screenshot-body { padding: 10px; line-height: 1.45; }
+
+        .case-panel-screen { height: calc(100vh - 40px); margin-top: 40px; background: #1a1a1a; color: #e0e0e0; overflow: hidden; display: flex; flex-direction: column; }
+        .suspects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px; }
+        .suspect-card { background: #242424; border: 1px solid #3a3a3a; border-radius: 8px; overflow: hidden; padding: 0; color: #fff; cursor: pointer; text-align: left; box-shadow: 0 8px 22px rgba(0,0,0,.25); }
+        .suspect-photo { aspect-ratio: 4 / 3; background: linear-gradient(135deg, #333, #151515); display: flex; align-items: center; justify-content: center; color: #777; font-size: 42px; overflow: hidden; }
+        .suspect-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .suspect-card-body { padding: 12px; display: flex; flex-direction: column; gap: 7px; }
+        .suspect-status { align-self: flex-start; border-radius: 999px; padding: 3px 8px; font-size: 11px; font-weight: 800; background: #ffcc00; color: #111; }
+        .suspect-name { font-size: 15px; font-weight: 800; line-height: 1.2; }
+        .suspect-role { font-size: 12px; color: #aaa; line-height: 1.3; }
+        .suspect-dossier { display: grid; grid-template-columns: 250px 1fr; background: #f5f5f0; color: #111; border: 1px solid #222; max-width: 960px; width: min(960px, calc(100vw - 70px)); max-height: calc(100vh - 95px); overflow: auto; box-shadow: 0 24px 80px rgba(0,0,0,.55); }
+        .suspect-dossier-photo { border-right: 1px solid #222; border-bottom: 1px solid #222; min-height: 250px; background: #ddd; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .suspect-dossier-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .suspect-dossier-table { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid #222; }
+        .suspect-cell { border-right: 1px solid #222; border-bottom: 1px solid #222; padding: 10px 12px; min-height: 46px; font-weight: 800; text-transform: uppercase; font-size: 13px; }
+        .suspect-cell:nth-child(2n) { border-right: 0; }
+        .suspect-wide { grid-column: 1 / -1; }
+        .suspect-notes { grid-column: 1 / -1; padding: 16px 18px; background: #fff; border-top: 0; font-size: 14px; line-height: 1.55; }
+        .suspect-notes p { margin: 0 0 14px; }
+.suspect-modal-close { position: absolute; right: 24px; top: 18px; z-index: 100001; background: #ff3b30; border: 0; color: #fff; border-radius: 8px; padding: 8px 14px; font-weight: 800; cursor: pointer; }
+
+        .case-final-btn { position: fixed; top: 48px; right: 18px; z-index: 10300; border: 0; border-radius: 999px; padding: 11px 18px; background: linear-gradient(135deg, #ffcc00, #ff9f0a); color: #111; font-weight: 900; cursor: pointer; box-shadow: 0 12px 28px rgba(255,204,0,.28); }
+        .case-final-btn.locked { background: #3a3a3a; color: #888; cursor: not-allowed; box-shadow: none; }
+        .suspect-lock-note { margin-top: 10px; color: #9b9b9b; font-size: 12px; line-height: 1.35; }
+        .case-final-screen { height: calc(100vh - 40px); margin-top: 40px; background: #111827; color: #e8eef7; overflow-y: auto; padding: 28px; }
+        .case-final-inner { max-width: 980px; margin: 0 auto; }
+        .case-final-title { display:flex; align-items:flex-end; justify-content:space-between; gap:18px; border-bottom:1px solid #334155; padding-bottom:18px; margin-bottom:22px; }
+        .case-final-title h1 { margin:0; font-size:30px; letter-spacing:0; }
+        .case-score { color:#9fb3ca; font-weight:800; }
+        .case-question-card { background:#1f2937; border:1px solid #334155; border-radius:10px; padding:16px; margin-bottom:12px; display:grid; grid-template-columns: 1fr auto; gap:12px; align-items:center; }
+        .case-question-card.correct { border-color:#34c759; box-shadow:0 0 0 1px rgba(52,199,89,.25); }
+        .case-question-card label { display:block; font-weight:800; margin-bottom:8px; color:#f8fafc; }
+        .case-question-card input { width:100%; border:1px solid #475569; border-radius:999px; padding:11px 15px; background:#0f172a; color:#fff; outline:none; }
+        .case-question-card input:focus { border-color:#64d2ff; box-shadow:0 0 0 3px rgba(100,210,255,.15); }
+        .case-check { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:#374151; color:#9ca3af; font-weight:900; }
+        .case-question-card.correct .case-check { background:#34c759; color:#041f0d; }
+        .case-actions { display:flex; justify-content:center; padding:20px 0 8px; }
+        .case-submit-btn { border:0; border-radius:999px; padding:14px 28px; background:#64d2ff; color:#061724; font-weight:900; cursor:pointer; }
+        .case-complete-modal { display:none; position:fixed; inset:0; z-index:100002; background:rgba(0,0,0,.88); align-items:center; justify-content:center; padding:24px; }
+        .case-complete-modal.show { display:flex !important; }
+        .case-complete-article { width:min(940px, 100%); max-height:calc(100vh - 48px); overflow:auto; background:#ffffff; color:#111827; border-radius:14px; box-shadow:0 26px 80px rgba(0,0,0,.5); }
+        .case-complete-head { position:sticky; top:0; z-index:2; background:#0f172a; color:#fff; padding:18px 24px; border-bottom:1px solid rgba(255,255,255,.12); }
+        .case-complete-head h2 { margin:0; padding-right:105px; font-size:26px; line-height:1.2; letter-spacing:0; }
+        .case-article-body { padding:26px clamp(18px, 4vw, 42px) 34px; font-size:17px; line-height:1.68; color:#111827; }
+        .case-article-body > h3 { margin:0 0 18px; font-size:22px; line-height:1.25; color:#111827; }
+        .case-article-photo { width:100%; aspect-ratio:16 / 9; min-height:0; max-height:390px; border-radius:12px; margin:0 0 26px; background:#d8dee8; display:flex; align-items:center; justify-content:center; overflow:hidden; color:#64748b; font-weight:800; text-align:center; }
+        .case-article-photo img { width:100%; height:100%; object-fit:cover; display:block; }
+        .news-article-long { max-width:780px; margin:0 auto; color:#111827; font-family:Georgia, 'Times New Roman', serif; }
+        .news-article-long .article-header { text-align:left; margin-bottom:18px; }
+        .news-article-long .article-category { display:inline-block; margin-bottom:10px; padding:5px 9px; border-radius:999px; background:#fee2e2; color:#991b1b; font:800 12px/1.2 Arial, sans-serif; text-transform:uppercase; letter-spacing:.06em; }
+        .news-article-long h1 { margin:0 0 10px; color:#0f172a; font-size:clamp(28px, 5vw, 42px); line-height:1.08; letter-spacing:0; }
+        .news-article-long .article-meta { margin:0; color:#64748b; font:600 14px/1.4 Arial, sans-serif; }
+        .news-article-long .article-divider { border:0; height:1px; background:#d7dee8; margin:24px 0; }
+        .news-article-long .article-lead { margin:0 0 22px; padding:18px 20px; border-left:5px solid #2563eb; background:#eff6ff; border-radius:0 10px 10px 0; }
+        .news-article-long h2, .news-article-long h3 { margin:30px 0 12px; color:#0f172a; line-height:1.25; letter-spacing:0; }
+        .news-article-long h2 { font-size:26px; }
+        .news-article-long h3 { font-size:20px; }
+        .news-article-long p { margin:0 0 17px; color:#111827; }
+        .news-article-long strong { color:#0f172a; }
+        .news-article-long em { color:#111827; }
+        .article-table-wrapper { overflow-x:auto; margin:22px 0 26px; }
+        .article-table-wrapper h3 { margin-top:0; }
+        .article-table-wrapper table { width:100%; min-width:650px; border-collapse:collapse; font-family:Arial, sans-serif; font-size:14px; line-height:1.45; color:#111827; }
+        .article-table-wrapper th, .article-table-wrapper td { border:1px solid #d7dee8; padding:12px; vertical-align:top; }
+        .article-table-wrapper th { background:#f1f5f9; color:#0f172a; text-align:left; }
+        .news-article-long blockquote { margin:24px 0; padding:18px 22px; border-left:5px solid #f59e0b; background:#fffbeb; border-radius:0 10px 10px 0; color:#111827; font-style:italic; }
+        .news-article-long .thank-you-long { margin:28px -8px 0; padding:18px 20px; border-radius:10px; background:#ecfdf5; color:#065f46; text-align:center; font-family:Arial, sans-serif; }
+        .case-close-btn { float:right; border:0; border-radius:8px; padding:8px 14px; background:#ff3b30; color:#fff; font-weight:900; cursor:pointer; }
+        @media (max-width: 640px) {
+            .case-complete-modal { padding:10px; align-items:stretch; }
+            .case-complete-article { max-height:calc(100vh - 20px); border-radius:10px; }
+            .case-complete-head { padding:14px 16px; }
+            .case-complete-head h2 { padding-right:86px; font-size:20px; }
+            .case-close-btn { padding:7px 10px; font-size:12px; }
+            .case-article-body { font-size:16px; }
+            .news-article-long h2 { font-size:22px; }
+            .news-article-long .article-lead { padding:14px 15px; }
+        }
+    </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+
+    <!-- Вкладки браузера -->
+    <div class="browser-tabs">
+        <div id="tab-messenger" class="b-tab active" onclick="switchDetectiveTab('messenger')">
+            💬 Чат с Алёной
+        </div>
+        <div id="tab-detective" class="b-tab" onclick="switchDetectiveTab('detective')">
+            🗂️ Кабинет детектива (Карта и Улики)
+        </div>
+        <div id="tab-evidence" class="b-tab hidden" onclick="switchDetectiveTab('evidence')">
+            📂 Улики по делу
+        </div>
+                <div id="tab-suspects" class="b-tab hidden" onclick="switchDetectiveTab('suspects')">
+            👥 Лица дела
+        </div><div id="tab-product" class="b-tab hidden" onclick="switchDetectiveTab('product')">
+            💊 SomnioMedica / Somnio-1
+        </div>
+    </div>
+    <button id="case-final-btn" class="case-final-btn" onclick="openFinalCasePage()" title="Открыть список вопросов по делу">Бланк вопросов</button>
+    <header class="navbar" style="position: fixed; width: 100%; z-index: 10100; background: #fff; height: 56px; border-bottom: 1px solid #e4e6eb;">
+        <div class="nav-left" style="display: flex; align-items: center; padding-left: 16px; gap: 8px; height: 100%;">
+            <div class="fb-logo-t" style="background: #1877f2; color: #fff; font-weight: bold; font-size: 24px; padding: 0 10px; border-radius: 4px;">T</div>
+            <div class="search-container">
+                <input type="text" placeholder="Поиск в соцсети..." disabled style="background: #f0f2f5; border: none; padding: 8px; border-radius: 20px; outline: none;">
+            </div>
+        </div>
+        <div class="nav-center" style="display: flex; gap: 32px; justify-content: center; align-items: center; height: 100%; flex-grow: 1;">
+            <div class="nav-tab active" id="nav-home-tab" title="Лента новостей" style="font-size: 20px; cursor: pointer;">🏠</div>
+            <div class="nav-tab" title="Video" style="font-size: 20px; cursor: pointer;">📺</div>
+            <div class="nav-tab" title="Группы" style="font-size: 20px; cursor: pointer;">👥</div>
+            <div class="nav-tab" title="Игры" style="font-size: 20px; cursor: pointer;">🎮</div>
+        </div>
+        <div class="nav-right" style="padding-right: 16px;">
+            <div class="nav-user-avatar" style="font-size: 24px;">🕵️</div>
+        </div>
+    </header>
+
+    <!-- ================= ЭКРАН 1: ОРИГИНАЛЬНАЯ ЛЕНТА ================= -->
+    <div id="screen-feed" class="main-layout">
+        <!-- ЛЕВАЯ ПАНЕЛЬ С СЕТКОЙ -->
+        <aside class="left-sidebar">
+            <div class="menu-item">
+                <div class="avatar-mini-placeholder">🕵️</div>
+                <span><strong>Детектив (Вы)</strong></span>
+            </div>
+            <div class="menu-item"><div class="menu-emoji-icon">👥</div> <span>Найти друзей</span></div>
+            <div class="menu-item"><div class="menu-emoji-icon">⏳</div> <span>Воспоминания</span></div>
+            <div class="menu-item"><div class="menu-emoji-icon">🔖</div> <span>Сохраненное</span></div>
+            <div class="menu-item"><div class="menu-emoji-icon">👨‍👩‍👧‍👦</div> <span>Группы</span></div>
+            <div class="menu-item"><div class="menu-emoji-icon">🎬</div> <span>Reels</span></div>
+            <div class="menu-item"><div class="menu-emoji-icon">🏪</div> <span>Marketplace</span></div>
+            <div class="menu-item"><div class="menu-emoji-icon">📅</div> <span>Мероприятия</span></div>
+            <div class="menu-item"><div class="menu-emoji-icon">📊</div> <span>Профессиональная панель</span></div>
+            <div class="menu-item"><div class="menu-emoji-icon">❤️</div> <span>Пожертвования</span></div>
+        </aside>
+
+        <main class="feed-container">
+            <!-- СТОРИС -->
+            <div class="stories-container">
+                <div class="story-card">
+                    <div class="story-avatar-img" style="display: flex; align-items: center; justify-content: center; background: #e4e6eb; font-size: 14px; border: 3px solid #1877f2;">🕵️</div>
+                    <div class="story-bg" style="background-image: url('pictures/facebook10.jpg');"></div>
+                    <div class="story-footer">Ваша история</div>
+                </div>
+                <div class="story-card">
+                    <img src="pictures/face3.png" class="story-avatar-img" alt="Алёна">
+                    <div class="story-bg" style="background-image: url('pictures/facebook11.jpg');"></div>
+                    <div class="story-footer">Алёна Иванова</div>
+                </div>
+                <div class="story-card">
+                    <img src="pictures/facebook6.jpg" class="story-avatar-img" alt="Макс">
+                    <div class="story-bg" style="background-image: url('pictures/facebook15.jpg');"></div>
+                    <div class="story-footer">Макс_Блог</div>
+                </div>
+                <div class="story-card">
+                    <img src="pictures/facebook7.jpg" class="story-avatar-img" alt="Илья">
+                    <div class="story-bg" style="background-image: url('pictures/facebook16.jpg');"></div>
+                    <div class="story-footer">Илья Кранк</div>
+                </div>
+            </div>
+
+            <div class="create-post-box" style="background: #fff; padding: 12px; border-radius: 8px; margin-bottom: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">
+                <div class="create-post-top" style="display: flex; gap: 8px; align-items: center; border-bottom: 1px solid #e4e6eb; padding-bottom: 8px;">
+                    <div class="avatar-mini-placeholder">🕵️</div>
+                    <input type="text" placeholder="Что у вас на уме, Детектив?" disabled style="flex-grow: 1; background: #f0f2f5; border: none; padding: 8px 12px; border-radius: 20px;">
+                </div>
+                <div class="create-post-bottom" style="display: flex; justify-content: space-around; padding-top: 8px; color: #65676b; font-size: 13px;">
+                    <div>📹 Эфир</div>
+                    <div>🖼️ Фото/видео</div>
+                    <div>😊 Чувства</div>
+                </div>
+            </div>
+
+            <!-- ПОСТ С ПОМИДОРАМИ -->
+            <div class="post">
+                <div class="post-author-info" style="display: flex; gap: 8px; margin-bottom: 8px;">
+                    <img src="pictures/facebook3.jpg" class="avatar-mini-img" alt="Мария">
+                    <div>
+                        <div class="author-name" style="font-weight: bold;">Мария Петровна</div>
+                        <div class="post-time" style="font-size: 12px; color: #65676b;">2 ч. назад · 🌐</div>
+                    </div>
+                </div>
+                <div class="post-content">
+                    <p>Смотрите, какие помидоры выросли у меня на даче в этом году! Настоящие гиганты, чисто на натуральном поливе. Скоро будем крутить банки на зиму! 🍅</p>
+                    <img src="pictures/facebook4.jpg" class="post-attached-img" alt="Помидоры">
+                </div>
+            </div>
+
+            <!-- ПОСТ 1: ВЫПУСКНОЙ У СЫНА -->
+            <div class="post">
+                <div class="post-author-info" style="display: flex; gap: 8px; margin-bottom: 8px;">
+                    <img src="pictures/facebook5.jpg" class="avatar-mini-img" alt="Елена">
+                    <div>
+                        <div class="author-name" style="font-weight: bold;">Елена Николаева</div>
+                        <div class="post-time" style="font-size: 12px; color: #65676b;">4 ч. назад · 🌐</div>
+                    </div>
+                </div>
+                <div class="post-content">
+                    <p>Даже не верится, как быстро летит время... Кажется, только вчера вели в первый класс, а сегодня уже выпускной у сына! Горжусь тобой, наш взрослый дипломированный специалист! Впереди взрослая жизнь! 🧑‍🎓🎉💼</p>
+                    <img src="pictures/facebook5.jpg" class="post-attached-img" style="object-position: top !important;" alt="Выпускной">
+                </div>
+            </div>
+
+            <!-- ПОСТ 2: ОТПУСК С ДЕВОЧКАМИ -->
+            <div class="post">
+                <div class="post-author-info" style="display: flex; gap: 8px; margin-bottom: 8px;">
+                    <img src="pictures/facebook2.jpg" class="avatar-mini-img" alt="Кристина">
+                    <div>
+                        <div class="author-name" style="font-weight: bold;">Кристина Миронова</div>
+                        <div class="post-time" style="font-size: 12px; color: #65676b;">5 ч. назад · 👥 Друзья</div>
+                    </div>
+                </div>
+                <div class="post-content">
+                    <p>Урааа, официальный отпуск начался! Наконец-то выбрались с теми самыми любимыми девочками за город. Забываем про рабочие чаты и наслаждаемся летом на полную! 🍹☀️🔥 #отпуск #девочки такие девочки #лето</p>
+                    <img src="pictures/facebook8.jpg" class="post-attached-img" alt="Отпуск">
+                </div>
+            </div>
+
+            <!-- СРОЧНЫЕ НОВОСТИ С ФОТО МАКСИМА -->
+            <div class="post highlighted-post" style="border-left: 4px solid #1877f2;">
+                <div class="post-author-info" style="display: flex; gap: 8px; margin-bottom: 8px;">
+                    <div class="avatar-mini-placeholder" style="background:#1877f2; color:#fff;">⚡</div>
+                    <div>
+                        <div class="author-name"><strong>Срочные Новости | Подмосковье</strong></div>
+                        <div class="post-time" style="font-size: 12px; color: #65676b;">Вчера в 14:20 · 🌐</div>
+                    </div>
+                </div>
+                <div class="post-content">
+                    <p><strong>ВНИМАНИЕ, ПРОПАЛ ЧЕЛОВЕК!</strong> Известный блогер-исследователь Максим Иванов (27 лет) перестал выходить на связь. Последний раз его видели во время экстремального ночного стрима из заброшенной усадьбы Брюса в Истринском районе. Если у вас есть любая информация о местонахождении Максима, просим незамедлительно связаться со следствием.</p>
+                    <img src="pictures/evadience1.png" class="post-attached-img" alt="Максим Иванов">
+                </div>
+            </div>
+        </main>
+
+        <aside class="right-sidebar">
+            <div class="sidebar-section">
+                <div class="section-header" style="font-weight: bold; padding: 8px 0;"><span>Запросы в друзья</span></div>
+                <div class="friend-request-card" style="display: flex; gap: 8px; background: #fff; padding: 8px; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">
+                    <img src="pictures/face3.png" class="req-avatar-img" style="width: 50px; height: 50px; border-radius: 50%;">
+                    <div class="req-info" style="display: flex; flex-direction: column; gap: 4px;">
+                        <strong>Алёна Иванова</strong>
+                        <span class="req-meta" style="font-size: 12px; color: #65676b;">1 общий друг</span>
+                        <div class="req-buttons" style="display: flex; gap: 4px;">
+                            <button class="confirm-btn" style="background: #1877f2; color:#fff; border:none; border-radius:4px; padding:4px 8px; cursor:pointer;">Подтвердить</button>
+                            <button class="delete-btn" style="background: #e4e6eb; border:none; border-radius:4px; padding:4px 8px; cursor:pointer;">Удалить</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="sidebar-divider" style="border: 0; border-top: 1px solid #ccd0d5; margin: 12px 0;">
+            <div class="sidebar-section">
+                <div class="section-header" style="font-weight: bold; padding-bottom: 8px;"><span>Контакты</span></div>
+                <div class="contact-item">
+                    <div class="contact-item">
+        <div class="contact-avatar-wrapper">
+            <img src="pictures/facebook6.jpg" class="contact-avatar-img" alt="Илья Петров">
+            <span class="online-badge"></span>
+        </div>
+        <span>Илья Петров</span>
+    </div>
+
+    <!-- Мирон Коваль -->
+    <div class="contact-item">
+        <div class="contact-avatar-wrapper">
+            <img src="pictures/facebook7.jpg" class="contact-avatar-img" alt="Мирон Коваль">
+            <span class="online-badge"></span>
+        </div>
+        <span>Мирон Коваль</span>
+    </div>
+
+    <!-- MsSkillllllx -->
+    <div class="contact-item">
+        <div class="contact-avatar-wrapper">
+            <img src="pictures/facebook1.jpg" class="contact-avatar-img" alt="MsSkillllllx">
+            <span class="online-badge"></span>
+        </div>
+        <span>MsSkillllllx</span>
+    </div>
+
+    <!-- Алиса Лим -->
+    <div class="contact-item">
+        <div class="contact-avatar-wrapper">
+            <img src="pictures/facebook15.jpg" class="contact-avatar-img" alt="Алиса Лим">
+            <span class="online-badge"></span>
+        </div>
+        <span>Алиса Лим</span>
+    </div>
+
+    <!-- Валя Петровна -->
+    <div class="contact-item">
+        <div class="contact-avatar-wrapper">
+            <img src="pictures/facebook1.jpg" class="contact-avatar-img" alt="Валя Петровна">
+            <span class="online-badge"></span>
+        </div>
+        <span>Валя Петровна</span>
+    </div>
+
+    <!-- Лариса Гузеева -->
+    <div class="contact-item">
+        <div class="contact-avatar-wrapper">
+            <img src="pictures/facebook17.jpg" class="contact-avatar-img" alt="Лариса Гузеева">
+            <span class="online-badge"></span>
+        </div>
+        <span>Лариса Гузеева</span>
+    </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- МАЛЕНЬКОЕ ОКНО ЧАТА -->
+    <div id="chat-window" class="chat-window">
+        <div class="chat-header">
+            <div class="chat-header-user">
+                <img src="pictures/face3.png" class="chat-header-avatar" alt="Алёна">
+                <div class="chat-header-info">
+                    <span class="chat-title">Алёна Иванова</span>
+                    <span class="chat-status">В сети</span>
+                </div>
+            </div>
+            <div class="chat-controls">
+                <button onclick="redirectToFullMessenger('Привет, я тут!')">⛶</button>
+            </div>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+            <div class="chat-bubble-gray">Привет... Ты видела, что пишут в новостях про Макса?</div>
+            <div class="chat-bubble-gray">Я до сих пор не могу поверить. Помоги мне, пожалуйста!</div>
+        </div>
+        <div class="chat-options" id="chat-options">
+            <button onclick="redirectToFullMessenger('Что случилось? Расскажи подробнее, были ли у него враги?')">
+                💬 Что случилось? Расскажи подробнее, были ли у него враги?
+            </button>
+            <button onclick="redirectToFullMessenger('Я видел статью. Полиция что-то нашла на месте стрима?')">
+                💬 Я видела статью. Полиция что-то нашла на месте стрима?
+            </button>
+        </div>
+    </div>
+
+    <!-- ================= ЭКРАН 2: ПОЛНОЭКРАННЫЙ MESSENGER ================= -->
+    <div id="screen-messenger" class="fullscreen-messenger hidden">
+        <aside class="msger-sidebar">
+            <div class="msger-sidebar-header"><h1>Чаты</h1></div>
+            <div class="msger-search"><span>🔍</span><input type="text" placeholder="Поиск в Messenger"></div>
+            <div class="chat-list-item">
+                <img src="pictures/face3.png" class="chat-list-avatar" alt="Алёна">
+                <div>
+                    <div class="chat-list-name">Алёна Иванова</div>
+                    <div style="font-size:13px; color:#0084ff;">Вы отправили сообщение</div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="msger-main">
+            <div class="msger-header">
+                <div class="msger-header-user">
+                    <img src="pictures/face3.png" class="msger-header-avatar" alt="Алёна">
+                    <div>
+                        <div class="msger-header-name">Алёна Иванова</div>
+                        <div class="msger-header-status">Активна сейчас</div>
+                    </div>
+                </div>
+            </div>
+            <div class="msger-chat-area" id="msger-chat-area">
+                <div class="msg-row incoming">
+                    <div class="msg-bubble">Привет... Ты видела, что пишут в новостях про Макса? Я до сих пор не могу поверить. Помоги мне, пожалуйста!</div>
+                </div>
+            </div>
+            <div class="msger-input-bar">
+                <div class="input-wrapper">
+                    <input type="text" placeholder="Вы перешли в полноэкранный режим чата..." disabled>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ================= ЭКРАН 3: РАБОЧИЙ КАБИНЕТ ДЕТЕКТИВА ================= -->
+    <div id="screen-detective" class="detective-dashboard hidden">
+        <aside class="dash-sidebar">
+            <div class="dash-section">
+                <h3>Дело #07-21: Исчезновение Максима Иванова</h3>
+                <p style="font-size: 13px; margin: 4px 0;">Статус: <span style="color: #ffcc00; font-weight: bold;">Начало расследования</span></p>
+            </div>
+
+           <div class="dash-section">
+    <h3>Собрано улик и доказательств</h3>
+    <p style="font-size: 13px; color: #aaa; margin: 4px 0 12px 0;">Найдено материалов: <span style="color:#ffcc00; font-weight:bold;">10</span></p>
+    <button onclick="openEvidenceGallery()"
+        style="width:100%; background:#2d2d2d; border:1px solid #ffcc00; border-radius:8px; color:#ffcc00; font-size:15px; font-weight:bold; padding:12px 16px; cursor:pointer; display:flex; align-items:center; justify-content:space-between;"
+        onmouseover="this.style.background='#3a3a2a'" onmouseout="this.style.background='#2d2d2d'">
+        <span>🗂️ Улики по делу</span>
+        <span style="font-size:20px;">→</span>
+    </button>
+</div>
+
+            <div class="dash-section">
+                <h3>Подозреваемые / Лица дела</h3>
+                <ul class="dash-list" style="list-style-type: none; padding-left: 0;">
+                    <li>👤 <strong style="color: #fff;">Максим Иванов</strong> (Блогер, пропавший)</li>
+                    <li>👤 <strong style="color: #fff;">Алёна Иванова</strong> (Сестра, заявительница)</li>
+                </ul>
+                <button id="suspects-open-btn" onclick="openSuspectsGallery()" class="locked" style="width:100%; margin-top:12px; background:#2d2d2d; border:1px solid #9b7cff; border-radius:8px; color:#d7c9ff; font-size:15px; font-weight:bold; padding:12px 16px; cursor:pointer; display:flex; align-items:center; justify-content:space-between; opacity:.55;" onmouseover="this.style.background='#342d45'" onmouseout="this.style.background='#2d2d2d'">
+                    <span>👥 Открыть картотеку лиц</span><span style="font-size:20px;">→</span>
+                </button>
+                <div id='suspects-lock-note' class='suspect-lock-note'>Откроется после того, как Алёна пришлёт сведения о людях, связанных с фондом и поставками.</div>
+            </div>
+
+            <div class="dash-section">
+                <h3>Заметки детектива</h3>
+                <textarea class="dash-notes" placeholder="Внесите сюда свои зацепки..."></textarea>
+            </div>
+
+            <div class="dash-section" style="margin-top: auto; border: 1px solid #0084ff; background: #15202b;">
+                <h3 style="color: #0084ff; border-bottom: 1px solid #0084ff;">📡 Защищенный канал: Алёна</h3>
+                <div id="detective-mini-chat" style="height: 220px; overflow-y: auto; font-size: 12px; display: flex; flex-direction: column; gap: 8px; padding: 4px; color: #fff;"></div>
+            </div>
+        </aside>
+
+        <main class="dash-map-area" style="flex-grow: 1; background: #111; position: relative; height: 100%;">
+            <div id="detective-map"></div>
+        </main>
+    </div>
+
+    <!-- СКРИПТЫ ЛОГИКИ -->
+    <script>
+        function redirectToFullMessenger(selectedText) {
+            const smallChat = document.getElementById('chat-window');
+            if (smallChat) { smallChat.style.setProperty('display', 'none', 'important'); }
+
+            document.getElementById('screen-feed').classList.add('hidden');
+            document.getElementById('nav-home-tab').classList.remove('active');
+            document.getElementById('screen-messenger').classList.remove('hidden');
+            document.getElementById('screen-messenger').dataset.opened = 'true';
+
+            appendPlayerMessage(selectedText);
+
+            setTimeout(() => {
+                appendAlenaMessage(`Он ещё месяц назад говорил, что планирует поехать в эту усадьбу Брюса. Говорил, что там бешеная энергетика и он хочет снять крутой материал для канала. Поехал две недели назад, 21 июля...`);
+                showResponseButtons([
+                    { text: "Он поехал один? Скинь мне то селфи, о котором говорила.", action: "step2" }
+                ]);
+            }, 1000);
+        }
+
+        function nextDialogueStep(step, playerText) {
+            appendPlayerMessage(playerText);
+            clearButtons();
+
+            if (step === 'step2') {
+                setTimeout(() => {
+                    appendAlenaMessage(`Да, поехал один. Вот его последнее селфи, которое он скинул мне перед самым выездом. Выглядел таким счастливым, ничто не предвещало беды...
+                    <img src="pictures/evadience1.png" style="width: 100%; max-width: 250px; border-radius: 8px; margin-top: 8px; display: block;">`);
+
+                    showResponseButtons([
+                        { text: "А после этого он выходил на связь? Что-то писал ночью?", action: "step3" }
+                    ]);
+                }, 1200);
+
+            } else if (step === 'step3') {
+                setTimeout(() => {
+                    appendAlenaMessage(`Уже ночью он переслал мне сообщения, которые отправлял своему другу. Смотри:<br><br>
+                    <div style="border-left: 3px solid #0084ff; padding-left: 10px; margin: 5px 0; color: #555; font-size: 14px; font-style: italic;">
+                        <strong>Переслано от Макс:</strong><br>
+                        «Я на месте. Тут жутковато, но сеть ловит идеально. Начинаю трансляцию, запускаю стрим, всё хорошо, подключайся!»
+                    </div>`);
+
+                    showResponseButtons([
+                        { text: "А полиция что говорит? Что за статья, про которую ты упоминала?", action: "step4" }
+                    ]);
+                }, 1200);
+
+            } else if (step === 'step4') {
+                setTimeout(() => {
+                    appendAlenaMessage(`Сегодня утром я наткнулась на статью в закрытом расследовательском блоге. Вот скриншот начала, который я успела сделать:
+                    <img src="pictures/evadience14.png" style="width: 100%; max-width: 300px; border-radius: 4px; margin-top: 8px; display: block; border: 1px solid #ddd; margin-bottom: 12px;">`);
+
+                    setTimeout(() => {
+                        const articleHTML = `
+                        <div style="background: #ffffff; border: 1px solid #e5e5e5; border-radius: 12px; padding: 18px; margin: 8px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.08); color: #222; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica;">
+
+    <div style="font-size: 11px; color: #ff3b30; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; font-weight: bold;">
+        🔥 НЕЗАВИСИМОЕ РАССЛЕДОВАНИЕ
+    </div>
+
+    <h4 style="margin: 0 0 12px 0; font-size: 19px; color: #1c1c1e; line-height: 1.3; font-weight: 700;">
+        Исчезновение на стриме: что скрывает следствие по делу блогера Максима Иванова?
+    </h4>
+
+    <p style="font-size: 13.5px; line-height: 1.5; margin: 0 0 12px 0;">
+        Прошло две недели с момента загадочного исчезновения известного блогера и исследователя заброшенных мест
+        <strong>Максима Иванова</strong>, более известного подписчикам как
+        <strong>dark.explorer</strong>.
+        Во время прямой трансляции из заброшенной усадьбы Брюса связь с блогером внезапно оборвалась.
+        С тех пор его местонахождение остается неизвестным.
+    </p>
+
+    <div style="background: #fff4e5; border-left: 4px solid #ff9500; padding: 10px 12px; margin-bottom: 14px; font-size: 13px; border-radius: 0 4px 4px 0; line-height: 1.4;">
+        <strong>Комментарий сестры пропавшего - Алёны Ивановой:</strong><br><br>
+        «Я не понимаю, почему полиция практически сразу решила, что Макс сам инсценировал свое исчезновение.
+        Такое ощущение, что никто даже не пытается проверить очевидные несостыковки.
+        Чем больше я изучаю материалы, тем больше вопросов появляется.
+        Мне кажется, кто-то очень хочет, чтобы все поверили в версию с побегом».
+    </div>
+
+    <div style="background: #f2f2f7; border-left: 4px solid #8e8e93; padding: 10px 12px; margin-bottom: 14px; font-size: 13px; border-radius: 0 4px 4px 0; line-height: 1.4;">
+        <strong>Комментарий руководителя следственной группы, полковника полиции Виктора Кравченко:</strong><br><br>
+        «На данный момент основной версией остается заранее спланированная инсценировка собственного исчезновения.
+        На месте происшествия отсутствуют следы борьбы.
+        Кроме того, обнаруженные личные вещи и некоторые найденные улики позволяют предположить,
+        что Максим Иванов заранее готовился покинуть место происшествия самостоятельно.
+        Оснований считать, что произошло похищение, у следствия пока нет».
+    </div>
+
+    <div style="background: #e8f5e9; border-left: 4px solid #34c759; padding: 10px 12px; margin-bottom: 14px; font-size: 13px; border-radius: 0 4px 4px 0; line-height: 1.4;">
+        <strong>Комментарий друзей блогера:</strong><br><br>
+        «Макс никогда бы не исчез без предупреждения.
+        Он всегда заранее сообщал маршрут близким и тщательно планировал каждую экспедицию.
+        Всё дорогостоящее оборудование осталось в усадьбе, а это совершенно не похоже на него.
+        Мы уверены, что официальная версия не соответствует действительности».
+    </div>
+
+    <p style="font-size: 13.5px; line-height: 1.5; margin: 0 0 12px 0;">
+        По словам Алёны Ивановой, ей удалось самостоятельно найти человека,
+        которого следствие до сих пор официально не опрашивало.
+        Речь идет о водителе такси, который последним видел Максима перед тем,
+        как тот вошел на территорию усадьбы.
+    </p>
+
+    <div style="background: #e5f1ff; border-left: 4px solid #007aff; padding: 10px 12px; margin-bottom: 14px; font-size: 13px; border-radius: 0 4px 4px 0; line-height: 1.4; color: #004085;">
+        <strong>Свидетельство водителя такси:</strong><br><br>
+        «Помню его, не часто такие заказы бывают. Я довез его почти до самых ворот усадьбы. Парень был абсолютно спокойный, в хорошем настроении, улыбался и шутил всю дорогу,
+        расплатился, пожелал хорошей смены и пошел внутрь. Запомнил его потому что у него с собой было много сьемочной техники, ну я и подумал может фильм какой снимают.
+        Когда я начал разворачиваться, заметил немного дальше по дороге в зарослях большую черную машину.
+        Было темно, марку я не разглядел, да и машина была черная, но автомобиль выглядел дорогим -
+        кузов буквально блестел в свете фар.
+        Тогда я подумал, что это друзья или съемочная команда блогера,
+        поэтому не придал этому никакого значения и уехал дальше на следующий заказ».
+    </div>
+
+    <p style="font-size: 13.5px; line-height: 1.5; margin: 0;">
+        Пока официальное расследование продолжается, многие обстоятельства этого дела
+        остаются необъясненными.
+        Почему следствие практически сразу исключило версию похищения?
+        Кому принадлежал неизвестный автомобиль возле усадьбы?
+        И самое главное - где сейчас находится Максим Иванов?
+        Ответов на эти вопросы до сих пор нет.
+    </p>
+
+</div>
+                        </div>`;
+
+                        appendAlenaMessage(`Благо у меня премиум-подписка! Лови полный текст статьи:<br>${articleHTML}`);
+                        showResponseButtons([
+                            { text: "😰 Жесть... И что теперь делать?", action: "step5" }
+                        ]);
+                    }, 1500);
+                }, 1200);
+
+            } else if (step === 'step5') {
+                setTimeout(() => {
+                    appendAlenaMessage(`Я сама места себе не нахожу, эта история не дает мне покоя! 😭 Но у меня есть зацепки. Через знакомых мне всё-таки удалось получить доступ к закрытым материалам дела!`);
+
+                    setTimeout(() => {
+                        appendAlenaMessage(`Там лежат файлы и точные координаты: <b class="fake-link" onclick="goToDetectiveDashboard()">www/html.case_file_21_07.ru</b>.<br><br>Открывай скорее, перейдем в рабочую панель!`);
+                        const inputBar = document.querySelector('.msger-input-bar');
+                        if (inputBar) {
+                            inputBar.innerHTML = `<div class="input-wrapper"><input type="text" placeholder="Изучите файл в сообщении Алёны выше..." disabled></div>`;
+                        }
+                    }, 1500);
+                }, 1200);
+            }
+        }
+
+        function goToDetectiveDashboard() {
+            switchDetectiveTab('detective');
+        }
+
+
+
+        let mapInstance = null;
+        let suspectAlibiLayer = null;
+        function addSuspectAlibiMarkers() {
+            if (!mapInstance || !investigationState.suspectsReviewed || suspectAlibiLayer) return;
+            suspectAlibiLayer = L.layerGroup().addTo(mapInstance);
+           const points = [
+        {
+            name: 'Алёна Иванова',
+            coords: [55.927, 38.188],
+            color: '#bf5af2',
+            text: 'Заявительница. Находилась дома в Москве. Передала следствию зацепки.'
+        },
+        {
+            name: 'Виктор Корсаков',
+            coords: [55.913, 38.203],
+            color: '#ff9500',
+            text: 'Директор фонда. Утверждает, что был на банкете в ресторане, но инвесторы заявляют, что он сбежал в 02:30 в длинном пальто. На месте борьбы найдены его часы.'
+        },
+        {
+            name: 'Алексей Морозов',
+            coords: [55.928, 38.199],
+            color: '#9b7cff',
+            text: 'Заместитель директора по исследовательским программам. Говорит, что уехал в 23:00 из лаборатории и больше никого не видел. Претендовал на найденные часы, говорил их ему подарил директор.'
+        },
+        {
+            name: 'Анна Смирнова',
+            coords: [55.918, 38.182],
+            color: '#30d158',
+            text: 'Личный ассистент директора. Утверждает, что уехала на поезде в 18:00, однако именно она подтвердила наличие у него часов прямо перед похищением.'
+        },
+        {
+            name: 'Семен Петров',
+            coords: [55.924, 38.194],
+            color: '#ffd60a',
+            text: 'Смотритель усадьбы. Дежурил в ночь преступления. Слышал грохот в 02:15 и видел Дмитрия Козлова в усадьбе.'
+        },
+        {
+            name: 'Дмитрий Козлов',
+            coords: [55.916, 38.201],
+            color: '#64d2ff',
+            text: 'Лаборант. Заявил, что уехал на метро в 23:00 с Алексеем Морозовым, но завхоз поймал его в лаборатории в 02:30, когда тот что-то искал.'
+        },
+        {
+            name: 'Елена Новикова',
+            coords: [55.931, 38.212],
+            color: '#ff2d55',
+            text: 'Инвестор. Видела, как Корсаков уехал с вечера раньше, а позже заметила его черный Майбах у ворот усадьбы Брюса в районе трех часов ночи.'
+        }
+    ];
+            points.forEach((p, idx) => {
+                const icon = L.divIcon({
+                    className:'custom-marker-icon',
+                    html:`<div style="width:28px;height:28px;border-radius:50%;background:${p.color};border:3px solid #111;color:#111;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 0 16px ${p.color};">${idx + 1}</div>`,
+                    iconSize:[28,28],
+                    iconAnchor:[14,14]
+                });
+                L.marker(p.coords, { icon }).addTo(suspectAlibiLayer).bindPopup(`<strong style="color:${p.color};">${p.name}</strong><br>${p.text}`);
+            });
+        }
+
+        function refreshInvestigationLocks() {
+            const suspectBtn = document.getElementById('suspects-open-btn');
+            const note = document.getElementById('suspects-lock-note');
+            if (suspectBtn) {
+                suspectBtn.disabled = !investigationState.suspectsUnlocked;
+                suspectBtn.classList.toggle('locked', !investigationState.suspectsUnlocked);
+                suspectBtn.style.opacity = investigationState.suspectsUnlocked ? '1' : '.55';
+                suspectBtn.style.cursor = investigationState.suspectsUnlocked ? 'pointer' : 'not-allowed';
+            }
+            if (note) note.textContent = investigationState.suspectsUnlocked ? 'Картотека доступна. После просмотра досье на карте появятся точки алиби.' : 'Откроется после того, как Алёна пришлёт сведения о людях, связанных с фондом и поставками.';
+            const finalBtn = document.getElementById('case-final-btn');
+            if (finalBtn) {
+                finalBtn.classList.remove('locked');
+                finalBtn.title = 'Открыть список вопросов по делу';
+            }
+        }
+
+        function unlockSuspectsSection() {
+            investigationState.suspectsUnlocked = true;
+            const tab = document.getElementById('tab-suspects');
+            if (tab) tab.classList.remove('hidden');
+            refreshInvestigationLocks();
+        }
+
+        function unlockFinalCase() {
+            investigationState.finalUnlocked = true;
+            refreshInvestigationLocks();
+            renderFinalQuestions();
+        }
+
+        function initDetectiveMap() {
+            const mapContainer = document.getElementById('detective-map');
+            if (!mapContainer) return;
+
+            if (mapInstance) {
+                mapInstance.invalidateSize();
+                return;
+            }
+
+            const departurePoint = [55.9207, 38.1931];
+            const signalPoint = [55.9232, 38.1992];
+            const manorPoint = [55.9220, 38.1960];
+            const areaCenter = [55.9220, 38.1960];
+            mapInstance = L.map('detective-map', { zoomControl: false }).setView(areaCenter, 13);
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap &copy; CARTO',
+                maxZoom: 19
+            }).addTo(mapInstance);
+
+            L.control.zoom({ position: 'bottomright' }).addTo(mapInstance);
+
+            const makeCaseIcon = (color, label) => L.divIcon({
+                className: 'custom-marker-icon',
+                html: `<div style="position:relative; width:32px; height:32px; display:flex; align-items:center; justify-content:center;">
+                    <div style="position:absolute; inset:2px; border-radius:50%; background:${color}; opacity:.22; box-shadow:0 0 22px ${color};"></div>
+                    <div style="position:relative; width:22px; height:22px; border-radius:50%; background:${color}; border:3px solid #111; color:#111; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; box-shadow:0 0 14px ${color};">${label}</div>
+                </div>`,
+                iconSize: [32, 32],
+                iconAnchor: [16, 16]
+            });
+
+            const departureIcon = makeCaseIcon('#64d2ff', '1');
+            const signalIcon = makeCaseIcon('#ff3b30', '3');
+            const manorIcon = makeCaseIcon('#ffcc00', '2');
+
+            L.polyline([departurePoint, manorPoint, signalPoint], {
+                color: '#64d2ff',
+                weight: 3,
+                opacity: 0.78,
+                dashArray: '8 8'
+            }).addTo(mapInstance).bindPopup('<strong style="color:#64d2ff;">Маршрут Максима</strong><br>Подъезд к усадьбе, место последнего стрима и зона, где после этого пропал сигнал телефона.');
+
+            L.marker(departurePoint, { icon: departureIcon }).addTo(mapInstance)
+                .bindPopup('<strong style="color:#64d2ff;">1. Место отправления</strong><br>Точка у подъезда к территории усадьбы. Здесь Максим должен был оставить транспорт и дальше идти к зданию, где начался стрим.');
+
+            L.marker(signalPoint, { icon: signalIcon }).addTo(mapInstance)
+                .bindPopup('<strong style="color:#ff3b30;">3. Потеря сигнала</strong><br>В этой зоне телефон перестал передавать геоданные. Радиус отмечен красным кругом, потому что точная точка отключения пока не подтверждена.');
+
+            L.marker(manorPoint, { icon: manorIcon }).addTo(mapInstance)
+                .bindPopup('<strong style="color:#ffcc00;">2. Усадьба Брюса</strong><br>Заброшенная усадьба с подвальными помещениями. Здесь был сделан последний кадр стрима, а позже найдены следы, ампула Somnio-1 и зодиакальный круг. Место выглядит подготовленным заранее.');
+
+            L.circle(signalPoint, { color: '#ff3b30', fillOpacity: 0.1, radius: 450 }).addTo(mapInstance);
+            L.circle(manorPoint, { color: '#ffcc00', fillOpacity: 0.06, radius: 260 }).addTo(mapInstance);
+
+            addSuspectAlibiMarkers();
+            setTimeout(() => { mapInstance.invalidateSize(); }, 200);
+        }
+
+        function appendAlenaMessage(htmlContent) {
+            const chatArea = document.getElementById('msger-chat-area');
+            if (!chatArea) return;
+            const alenaMsgRow = document.createElement('div');
+            alenaMsgRow.className = 'msg-row incoming';
+            alenaMsgRow.innerHTML = `<div class="msg-bubble">${htmlContent}</div>`;
+            chatArea.appendChild(alenaMsgRow);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function appendPlayerMessage(text) {
+            const chatArea = document.getElementById('msger-chat-area');
+            if (!chatArea) return;
+            const myMsgRow = document.createElement('div');
+            myMsgRow.className = 'msg-row outgoing';
+            myMsgRow.innerHTML = `<div class="msg-bubble">${text}</div>`;
+            chatArea.appendChild(myMsgRow);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function clearButtons() {
+            const inputBar = document.querySelector('.msger-input-bar');
+            if (inputBar) { inputBar.innerHTML = ''; }
+        }
+
+        function showResponseButtons(buttonsArray) {
+            const inputBar = document.querySelector('.msger-input-bar');
+            if (!inputBar) return;
+
+            const btnContainer = document.createElement('div');
+            btnContainer.style.cssText = "display: flex; flex-direction: column; gap: 8px; width: 100%; padding: 4px 0;";
+
+            buttonsArray.forEach(btnData => {
+                const btn = document.createElement('button');
+                btn.innerHTML = btnData.text;
+                btn.className = 'response-choice';
+                btn.onclick = () => { if (btnData.action && btnData.action.startsWith('somnio_')) { continueSomnioDialogue(btnData.action); } else { nextDialogueStep(btnData.action, btnData.text); } };
+                btnContainer.appendChild(btn);
+            });
+
+            inputBar.innerHTML = '';
+            inputBar.appendChild(btnContainer);
+        }
+    </script>
+   <script src="app.js"></script>
+
+    <!-- ================= ЭКРАН 4: ГАЛЕРЕЯ УЛИК ================= -->
+    <div id="screen-evidence" class="detective-dashboard hidden" style="flex-direction:column; overflow:hidden;">
+        <div style="background:#222; border-bottom:1px solid #333; padding:14px 24px; display:flex; align-items:center; gap:16px; flex-shrink:0;">
+            <button onclick="closeEvidenceGallery()"
+                style="background:#3a3a3a; border:none; color:#fff; border-radius:8px; padding:8px 16px; cursor:pointer; font-size:14px;"
+                onmouseover="this.style.background='#4a4a4a'" onmouseout="this.style.background='#3a3a3a'">
+                ← Назад к карте
+            </button>
+            <div>
+                <div style="font-size:18px; font-weight:bold; color:#ffcc00;">🗂️ Материалы дела № 07-21</div>
+                <div style="font-size:12px; color:#888; margin-top:2px;">Фотоматериалы · Вещественные доказательства · Документы</div>
+            </div>
+        </div>
+        <div style="flex-grow:1; overflow-y:auto; padding:24px; background:#1a1a1a;">
+            <div id="evidence-grid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:16px;"></div>
+        </div>
+    </div>
+
+    <!-- ЛАЙТБОКС -->
+    
+    
+    <div id="screen-suspects" class="case-panel-screen hidden">
+        <div style="background:#222; border-bottom:1px solid #333; padding:14px 24px; display:flex; align-items:center; gap:16px; flex-shrink:0;">
+            <button onclick="closeSuspectsGallery()" style="background:#3a3a3a; border:none; color:#fff; border-radius:8px; padding:8px 16px; cursor:pointer; font-size:14px;" onmouseover="this.style.background='#4a4a4a'" onmouseout="this.style.background='#3a3a3a'">← Назад к карте</button>
+            <div><div style="font-size:18px; font-weight:bold; color:#d7c9ff;">👥 Картотека лиц дела № 07-21</div><div style="font-size:12px; color:#888; margin-top:2px;">Подозреваемые · Свидетели · Связанные лица · Досье</div></div>
+        </div>
+        <div style="flex-grow:1; overflow-y:auto; padding:24px; background:#1a1a1a;"><div id="suspects-grid" class="suspects-grid"></div></div>
+    </div>
+
+    <div id="suspect-lightbox" style="display:none; position:fixed; inset:0; z-index:99998; background:rgba(0,0,0,.86); align-items:center; justify-content:center; padding:34px;">
+        <button class="suspect-modal-close" onclick="closeSuspectProfile()">✕</button>
+        <div class="suspect-dossier">
+            <div class="suspect-dossier-photo"><img id="suspect-modal-img" src="" alt="Фото подозреваемого" onerror="this.style.display='none'; this.parentElement.textContent='Место для фото';"></div>
+            <div class="suspect-dossier-table">
+                <div class="suspect-cell">Статус: <span id="suspect-modal-status"></span></div>
+                <div class="suspect-cell">File: <span id="suspect-modal-file"></span></div>
+                <div class="suspect-cell suspect-wide">Город проживания: <span id="suspect-modal-city"></span></div>
+                <div class="suspect-cell suspect-wide">Имя, фамилия: <span id="suspect-modal-name"></span></div>
+                <div class="suspect-cell suspect-wide">Дата рождения: <span id="suspect-modal-birth"></span></div>
+                <div class="suspect-cell suspect-wide">Профессия / должность: <span id="suspect-modal-job"></span></div>
+            </div>
+            <div id="suspect-modal-notes" class="suspect-notes"></div>
+        </div>
+    </div>
+
+    <div id="screen-final" class="case-final-screen hidden">
+        <div class="case-final-inner">
+            <div class="case-final-title"><div><h1>Бланк вопросов на дело № 07-21</h1><div style="color:#9fb3ca; margin-top:6px;">Заполни бланк расследования. Ответ засчитывается по ключевому слову, а список ключей можно редактировать в CASE_QUESTIONS.</div></div><div id="case-score" class="case-score">0 / 15</div></div>
+            <div id="case-questions"></div>
+            <div class="case-actions"><button class="case-submit-btn" onclick="checkCaseAnswers()">Проверить ответы</button></div>
+        </div>
+    </div>
+
+    <div id="case-complete-modal" class="case-complete-modal" role="dialog" aria-modal="true">
+        <article class="case-complete-article">
+            <div class="case-complete-head"><button class="case-close-btn" onclick="closeCaseCompleteModal()">Закрыть</button><h2>Поздравляю, вы раскрыли это дело</h2></div>
+            <div class="case-article-body">
+                <h3>Вы раскрыли дело и спасли Максима</h3>
+                <div class="case-article-photo">
+                    <img src="pictures/evadience25.png" alt="Максима спасают из заточения" onerror="this.remove(); this.parentElement.textContent='Место для фото: сюда можно вставить кадр, где полиция спасает Максима из заточения';">
+                </div>
+                <div class="news-article-long">
+    <div class="article-header">
+        <span class="article-category">Спецрасследование</span>
+        <h1>Синдикат во лжи: как пропажа блогера Максима Иванова вскрыла тайны фонда Корсакова</h1>
+        <p class="article-meta">Опубликовано: 22 августа | Время чтения: 5 минут</p>
+    </div>
+
+    <hr class="article-divider">
+
+    <div class="article-lead">
+        <p><strong>Месяц неопределенности, десятки ложных версий и спекуляций в сети подошли к концу. Популярный независимый блогер Максим Иванов, бесследно исчезнувший в ночь с 21 на 22 июля, найден живым в ходе скоординированной поисковой операции в лесу возле загородной усадьбы фонда «ООО Три Луны». Расследование, начавшееся как поиск пропавшего человека, обернулось раскрытием подпольной сети по производству опасных психотропных веществ.</strong></p>
+    </div>
+
+    <h2>Часть 1: Опасный контент и роковая запись</h2>
+    <p>Изначально исчезновение Иванова связывали с его профессиональным выгоранием, творческим кризисом или банальным и жестким пиар-ходом - в сети вовсю шутили, что стример просто «хайпует» и устроил инсценировку ради взрывного роста подписок. Однако сестра Максима сразу забила тревогу, заявив, что перед самым исчезновением брат планировал провести свой прямой эфир в усадье Брюса в деревне Глухово.</p>
+
+    <p>Теперь, когда полиция наконец взялась за дело после многочисленных обращений сестры пропавшего и по зацепкам частного детектива, всё подтвердилось: Максим решился на безумный шаг - провести стрим-проходку в реальном времени около объектов благотворительного фонда, который возглавляет известный меценат Виктор Корсаков.</p>
+
+    <h2>Часть 2: Анатомия провала. Как идеальный подпольный бизнес начал рушится</h2>
+    <p>Именно цепочка фатальных ошибок заговорщиков позволила раскрыть это дело. В ту ночь в подземной лаборатории усадьбы младший практикант Дмитрий Козлов проводил несогласованные тесты новой партии психотропного вещества с использованием экспериментального крио-компонента. Из-за неопытности студент допустил грубейшее нарушение технологического процесса. Пока в лаборатории поднималась паника и все пытались ликвидировать последствия химического косяка, никто из персонала попросту не заметил спрятавшегося в подвале стримера. Максим начал свой стрим около двух часов ночи что совпало с началом тестов неопытного лаборанта.</p>
+
+    <h3>По следам ночной тревоги</h3>
+    <p>Однако безалаберность лаборанта привела к тому, что в цокольном этаже сработала автоматическая аварийная сигнализация. Прямое уведомление о тревоге пришло на телефон Виктора Корсакова прямо во время светского банкета около 02:30 ночи. Меценат сорвался с мероприятия и экстренно примчался в усадьбу со своим телохранителем Андреем Волковым.</p>
+
+    <p>Корсаков лично спустился в цокольный этаж, чтобы разобраться в происходящем, и наткнулся на Максима прямо посреди подвала. Последний, шокирующий кадр трансляции, который успели увидеть шокированные зрители до того, как связь оборвалась — это нога Корсакова, обнаружившего стримера. Оказавшись в безвыходной ситуации, организаторы не придумали ничего лучше, чем действовать напролом: они скрутили Максима прямо там же, вкололи ему ударную дозу седативного препарата «Somnio-1» и заперли его вместе с бракованной партией препарата в дальних подвальных помещениях. Они надеялись, что раз стрим прервался так резко, они смогут всё зачистить и выставить это как глупый пранк или инсценировку самого блогера. Но они не учли, что этот последний жуткий кадр из подвала станет главной зацепкой для сестры и частного детектива. </p>
+
+    <div class="article-table-wrapper">
+        <h3>Анализ ключевых противоречий в показаниях</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Подозреваемый</th>
+                    <th>Заявление для протокола</th>
+                    <th>Фактическая улика (Опровержение)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Виктор Корсаков (Директор)</strong></td>
+                    <td>«Всю ночь с 21 на 22 июля я безвылазно находился на благотворительном банкете в центре города».</td>
+                    <td>Данные геолокации и видеорегистратора: на телефон Корсакова в 02:30 пришло уведомление об аварии в лаборатории, а в 02:45 его личный «Майбах» уже зафиксировали камеры усадьбы.</td>
+                </tr>
+                <tr>
+                    <td><strong>Дмитрий Козлов (Лаборант-практикант)</strong></td>
+                    <td>«Я ушел из лаборатории вместе с доктором Морозовым ровно в 23:00. Никаких внештатных ситуаций не было, мы ушли последними».</td>
+                    <td>Логи аварийной системы: в 02:28 в цокольном этаже зафиксирован критический скачок температуры из-за нарушения правил работы с крио-компонентами.</td>
+                </tr>
+                <tr>
+                    <td><strong>Исполнители</strong></td>
+                    <td>«Никаких посторонних в подвалах не было. К тому же, трансляция оттуда технически невозможна: в цоколе круглосуточно работают глушилки сотовой связи и Wi-Fi».</td>
+                    <td>Аварийный скачек электросети: из-за химического сбоя Дмитрия Козлова в 02:28 подвал частично обесточило. Глушилки отключились, что позволило Максиму поймать сеть и запустить свой последний стрим прямо перед появлением Корсакова.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h2>Часть 3: Логистика преступления. Машины и следы</h2>
+    <p>Вторым критическим фактором стала транспортная улика. Охрана усадьбы настаивала на строгом учете автомобилей и утверждала, что в ночь похищения на территории находился как их служебный джип, так и «Майбах» директора. Однако запросы в автосервис показали, что ведомственный внедорожник охраны сломался и был отправлен на капитальный ремонт еще 15 июля.</p>
+
+    <p>Это означало, что любые перемещения по территории усадьбы в ночь с 21 на 22 июля совершались исключительно на представительском «Майбахе» Корсакова. Именно на нем Максима Иванова в бессознательном состоянии (под воздействием все того же Somnio-1) перевезли от забора к неприметному домику в лесу.</p>
+
+    <p>И последняя точка — следы обуви. Вся дежурная смена охраны, согласно уставу, носила тяжелые армейские берцы на глубоком протекторе. Однако в подвале где оборвался след блогера, эксперты-криминалисты нашли отпечатки совершенно другой гражданской обуви. Вкупе с ампулой препарата, оброненной лаборантом в спешке, пазл окончательно сложился.</p>
+
+    <blockquote>
+        «Они продумали почти всё — подкупили свидетелей, обеспечили алиби на публичном мероприятии, спрятали лабораторию под землю. Но их подвела самоуверенность и мелочи. Проектор шин, марка подошвы, фасон пальто — преступления сыпятся на деталях», — заявил ведущий следователь по делу Иванова.
+    </blockquote>
+
+    <h2>Эпилог: Правосудие восторжествовало</h2>
+    <p>Сейчас Максим Иванов находится в закрытом медицинском учреждении под охраной. Препарат Somnio-1, которым его накачивали, чтобы удерживать в покорности, нанес серьезный удар по организму, но врачи дают позитивные прогнозы. Блогер уже выразил огромную благодарность всем, кто не бросил расследование и по крупицам восстановил хронологию той страшной ночи.</p>
+
+    <p>В отношении Виктора Корсакова и трех сотрудников его фонда возбуждено уголовное дело по статьям «Похищение человека, совершенное группой лиц» и «Незаконное производство сильнодействующих или ядовитых веществ». На имущество фонда наложен арест.</p>
+
+    <hr class="article-divider">
+    <p class="thank-you-long"><strong>Дело закрыто. Благодаря вашему острому уму, внимательности к деталям и настойчивости, преступная схема была разрушена, а человеческая жизнь — спасена!</strong></p>
+</div>
+            </div>
+        </article>
+    </div>
+    <div id="screen-product" class="somnio-page hidden">
+        <div class="somnio-browser-bar"><span>←</span><span>→</span><span>↻</span><div class="somnio-url">somniomedica.com/products/somnio-1</div><span>☆</span><span>⋮</span></div>
+        <div class="somnio-nav"><div class="somnio-brand"><strong>SomnioMedica</strong><span>Advanced Sleep Solutions</span></div><div class="somnio-links"><span>О компании</span><span>Продукция</span><span>Применение</span><span>Для специалистов</span><span>Контакты</span><span>RU⌄</span></div></div>
+        <main class="somnio-content">
+            <section class="somnio-hero">
+               <div class="somnio-ampoule-img-wrap">
+                <img src="pictures/somnio_ampoule.png" alt="Somnio-1 Ampoule" class="somnio-product-image" style="max-width: 220px; height: auto; display: block; margin: 0 auto;">
+            </div>
+                <div class="somnio-title"><h1>Somnio-1</h1><h2>Раствор для инъекций</h2><p>Действующее вещество: Зопиклон (Zopiclone)</p><p>10 мг/мл</p><p><strong>Somnio-1</strong> — современный гипнотический препарат, предназначенный для краткосрочного лечения бессонницы. Обеспечивает быстрое засыпание, снижает количество ночных пробуждений и улучшает качество сна.</p>
+                    <div class="somnio-grid"><div><h3>Показания к применению</h3><ul><li>Трудности засыпания</li><li>Частые пробуждения ночью</li><li>Поверхностный, прерывистый сон</li><li>Нарушения сна, связанные со стрессом</li></ul></div><div><h3>Способ применения</h3><p>Вводится внутримышечно. Рекомендуемая доза для взрослых — 1 ампула (10 мг) перед сном. Продолжительность лечения — до 7–10 дней.</p></div><div><h3>Состав</h3><p>Зопиклон (Zopiclone) — 10 мг/мл. Вспомогательные вещества: вода для инъекций, пропиленгликоль, этанол безводный, натрия гидроксид, уксусная кислота.</p></div><div><h3>Форма выпуска</h3><p>Раствор для инъекций 10 мг/мл. Ампулы по 2 мл. Упаковка: 5 ампул в блистере.</p></div></div>
+                    <div class="somnio-warning"><div class="somnio-warning-icon">!</div><div><strong>ВАЖНО:</strong><br>Препарат отпускается только по рецепту врача. Применение без назначения специалиста запрещено. Перед использованием ознакомьтесь с инструкцией.</div></div>
+                    <section class="somnio-buy"><h3>Как купить Somnio-1</h3><p>Препарат доступен только для медицинских учреждений и лицензированных специалистов. Для оформления заказа свяжитесь с нашим отделом продаж.</p></section>
+                </div>
+            </section>
+            <section class="somnio-contacts" id="somnio-contacts"><div class="somnio-contact-card"><h3>Контакты</h3><strong>SomnioMedica Pharmaceuticals Ltd.</strong><br>Per. номер: 11873241<br>7 Denmark Street,<br>London, WC2H 8LS<br>United Kingdom</div><div class="somnio-contact-card"><h3>Телефоны</h3>+44 20 7946 0958<br>+44 20 7946 0959<br><br><strong>Email</strong><br><u>info@somniomedica.com</u></div><div class="somnio-contact-card"><h3>Отдел продаж</h3>sales@somniomedica.com<br><br><strong>Поддержка</strong><br>support@somniomedica.com</div></section>
+            <div class="somnio-share-wrap"><button id="share-somnio-btn" class="somnio-share-btn" onclick="shareSomnioContactsWithAlena()">☁ Переслать данные Алёне</button></div>
+        </main>
+    </div>
+    <div id="evidence-lightbox" style="display:none; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,0.93); flex-direction:column;">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 20px; background:#111; flex-shrink:0; border-bottom:1px solid #333;">
+            <div>
+                <span id="lb-title" style="color:#ffcc00; font-weight:bold; font-size:15px;"></span>
+                <span id="lb-counter" style="color:#888; font-size:13px; margin-left:12px;"></span>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <button onclick="lbZoom(0.25)" style="background:#2a2a2a; border:1px solid #444; color:#fff; border-radius:6px; padding:6px 12px; cursor:pointer; font-size:15px;">🔍+</button>
+                <button onclick="lbZoom(-0.25)" style="background:#2a2a2a; border:1px solid #444; color:#fff; border-radius:6px; padding:6px 12px; cursor:pointer; font-size:15px;">🔍−</button>
+                <button onclick="lbResetZoom()" style="background:#2a2a2a; border:1px solid #444; color:#fff; border-radius:6px; padding:6px 12px; cursor:pointer; font-size:13px;">1:1</button>
+                <button onclick="closeLightbox()" style="background:#ff3b30; border:none; color:#fff; border-radius:6px; padding:6px 18px; cursor:pointer; font-size:16px; font-weight:bold;">✕</button>
+            </div>
+        </div>
+        <div style="flex-grow:1; display:flex; overflow:hidden; position:relative;">
+            <button onclick="lbNavigate(-1)" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); z-index:2; background:rgba(0,0,0,0.6); border:1px solid #555; color:#fff; border-radius:50%; width:46px; height:46px; font-size:28px; cursor:pointer; display:flex; align-items:center; justify-content:center; line-height:1; padding:0 0 3px 0;">‹</button>
+            <div id="lb-img-wrap" style="flex-grow:1; overflow:hidden; display:flex; align-items:center; justify-content:center; cursor:zoom-in; touch-action:none;">
+                <img id="lb-img" src="" alt="" draggable="false" style="max-width:100%; max-height:100%; border-radius:8px; transition:transform 0.12s ease-out; transform-origin:center center; user-select:none; display:block; will-change:transform;">
+            </div>
+            <button onclick="lbNavigate(1)" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); z-index:2; background:rgba(0,0,0,0.6); border:1px solid #555; color:#fff; border-radius:50%; width:46px; height:46px; font-size:28px; cursor:pointer; display:flex; align-items:center; justify-content:center; line-height:1; padding:0 0 3px 0;">›</button>
+        </div>
+        <div id="lb-comments" style="background:#111; border-top:1px solid #333; padding:16px 24px; flex-shrink:0; max-height:160px; overflow-y:auto; display:flex; flex-direction:column; gap:10px;"></div>
+    </div>
+
+    <script>
+
+        const SUSPECTS = [
+    {
+        name: 'Максим Иванов',
+        status: 'Пропавший / ключевое лицо',
+        file: 'IVANOV-M-0721',
+        city: 'Москва',
+        birth: '14.03.1998',
+        job: 'Блогер, автор канала о заброшенных местах',
+        photo: 'pictures/face1.png',
+        role: 'Последний раз был в усадьбе Брюса',
+        notes: [
+            '— Перед исчезновением поехал один, чтобы снять ночной стрим в усадьбе Брюса в деревне Глухово.',
+            '— Вел прямой эфир в ночь с  21 по 22 июля. Последний кадр трансляции зафиксировал подол длинного темного пальто и лакированный ботинок после этого телефон упал и стрим прекратился.',
+            '— На месте его похищения были найдены улики указывающие на то, что с ним случилось.'
+        ]
+    },
+    {
+        name: 'Алёна Иванова',
+        status: 'Заявительница / свидетель',
+        file: 'IVANOVA-A-0721',
+        city: 'Москва',
+        birth: '02.09.2001',
+        job: 'Студентка, сестра Максима',
+        photo: 'pictures/face2.png',
+        role: 'Передала переписку и материалы',
+        notes: [
+            '— Первой сообщила о пропаже брата.',
+            '— Передала доступ к его вещам и к материалам следствия',
+            '— Вспоминает, что перед выездом Максим изучал какие-то нотариальные документы.'
+        ]
+    },
+    {
+        name: 'Виктор Корсаков',
+        status: 'Подозреваемый',
+        file: 'KORSAKOV-V-0721',
+        city: 'Москва',
+        birth: '12.05.1974',
+        job: 'Председатель правления ООО «Три Луны»',
+        photo: 'pictures/face4.png',
+        role: 'Директор фонда',
+        notes: [
+            '— 21 июля был важнейший день для нашего фонда — мы закрывали полугодовой отчет перед главными инвесторами. Весь вечер, примерно до двух часов ночи, я провел на благотворительном приеме в ресторане «Парус» в черте города. Моя охрана подтвердит, что из VIP-зала я практически не выходил. Вернулся домой уставшим и сразу лег спать.',
+            '— Карманные часы на вашем фото? Да, это семейная реликвия, я всегда ношу их в кармане жилетки. Но постойте, я оставил их в своем городском кабинете на столе еще за три дня до этого происшествия, 18 июля! Видимо, кто-то из сотрудников взял их без спроса. Я требую провести внутреннее расследование, это возмутительно.',
+            '— Если вы внимательно изучите общие фотографии с этого банкета, то наверняка заметите меня на заднем плане у фуршетной линии. Меня легко узнать: я там в своем привычном классическом итальянском костюме и матовых кожаных туфлях - терпеть не могу лакированную обувь, она выглядит слишком вычурно. Плащ я оставил в гардеробе и, кажется, забыл его потом в ресторане.'
+        ]
+    },
+    {
+        name: 'Алексей Морозов',
+        status: 'Подозреваемый',
+        file: 'MOROZOV-A-0721',
+        city: 'Москва',
+        birth: '24.09.1981',
+        job: 'Заместитель директора по исследовательским программам',
+        photo: 'pictures/face5.png',
+        role: 'Главный фармацевт',
+        notes: [
+            '— В ту ночь я работал в лаборатории усадьбы над новой формулой успокоительного. График был плотный, так как по нашему внутреннему регламенту все тесты должны строго совпадать с пиками лунной активности — мы исследуем влияние приливов на биоритмы. Из лаборатории я уехал рано, около 23:00, так как у меня жутко разболелась голова.',
+            '— Помню, когда я уходил, в холле было тихо, охранник даже кажется задремал на посту и я его разбудил, так как он забыл выключить свет в одном из кабинетов.',
+            '— Да, у меня есть ключи от всех кабинетов и сейфов с препаратами. Но в ту ночь я ничего не брал и никуда не заходил. И вообще, я не переношу вид крови, я ученый, а не боевик. Мое дело - исследования.'
+        ]
+    },
+    {
+        name: 'Анна Смирнова',
+        status: 'Подозреваемая',
+        file: 'SMIRNOVA-A-0721',
+        city: 'Москва',
+        birth: '15.11.1995',
+        job: 'Личный ассистент директора',
+        photo: 'pictures/face6.png',
+        role: 'Секретарша фонда',
+        notes: [
+            '— 21 июля я уехала с работы ровно в 18:00, у меня был поезд к родителям в пригород. Вернулась только в понедельник утром. На приеме в ресторане я не присутствовала, так как это была закрытая встреча только для руководства.',
+            '— Перед уходом я заносила документы на подпись господину Корсакову. Помню, он очень нервничал, постоянно крутил в руках свои серебряные карманные часы - знаете, эта его привычка щелкать крышкой туда-сюда, когда он не в духе. Он еще попросил меня убрать их в ящик, но я замоталась и забыла.',
+            '— Максим? Да, этот мальчик приходил к нам устраиваться волонтером за неделю до этого. Очень странный, постоянно расспрашивал про наши загородные постройки и астрологический календарь, который мы печатаем для сотрудников. Я подумала, он просто увлекается эзотерикой и не понимает чем на самом деле занимается фонд.'
+        ]
+    },
+    {
+        name: 'Андрей Волков',
+        status: 'Подозреваемый',
+        file: 'VOLKOV-A-0721',
+        city: 'Солнечногорск',
+        birth: '03.02.1983',
+        job: 'Руководитель службы безопасности фонда',
+        photo: 'pictures/face7.png',
+        role: 'Начальник охраны усадьбы',
+        notes: [
+            '— Ночь с 21 на 22 июля выдалась паршивой. Весь вечер и часть ночи я сопровождал господина Корсакова в качестве личной охраны на благотворительном приеме в ресторане „Парус“. Это не входит в мои рабочие обязанности. Мы вернулись в усадьбу уставшими около трех часов ночи. Директор сразу пошел к себе спать, а я решил сделать быстрый обход и заварить кофе.',
+            '— Насчет машин на территории - у нас строгий учет. В ту ночь во дворе стоял только Майбах директора. Моего служебного джипа там быть не могло, он еще 15 июля он серьезно сломался и я передали его в ремонт.',
+            '— Лакированная обувь? Смеетесь? В нашей работе в такой только ноги ломать, мы все в берцах ходим, чтобы в любую непогоду по грязи бегать.'
+        ]
+    },
+    {
+        name: 'Елена Новикова',
+        status: 'Свидетель',
+        file: 'NOVIKOVA-E-0721',
+        city: 'Москва',
+        birth: '19.08.1978',
+        job: 'Частный инвестор, меценат',
+        photo: 'pictures/face8.png',
+        role: 'Главный инвестор фонда',
+        notes: [
+            '— На благотворительном приеме в «Парусе» я была вместе с Виктором Корсаковым. Но вечер был испорчен. Около двух часов ночи ему на телефон пришло какое-то сообщение. Он изменился в лице, стал жутко бледным. Быстро попрощался, накинул свое фирменное длинное черное пальто, в котором он вечно ходит и ушел.',
+            '— Я уехала следом, примерно в 02:30. Мой водитель вез меня мимо загородной усадьбы фонда, так как это самая быстрая дорога к моему особняку. Помню, было около трех ночи. Дождь лил стеной. У ворот усадьбы я заметила что фары черного Майбаха Корсакова освещали дорогу и была суета возле машины.',
+            '— Я обожаю дорогую обувь и знаю в ней толк. Виктор всегда покупает одну и ту же марку - черные лакированные туфли ручной работы, он считает, что матовая кожа выглядит дешево. Так что его сказки про «скромные вкусы» пускай он оставит для прессы.'
+        ]
+    },
+    {
+        name: 'Семен Петров',
+        status: 'Свидетель',
+        file: 'PETROV-S-0721',
+        city: 'Солнечногорск',
+        birth: '11.01.1962',
+        job: 'Заведующий хозяйством усадьбы',
+        photo: 'pictures/face9.png',
+        role: 'Завхоз усадьбы',
+        notes: [
+            '— Моя хата с краю, я в их науку не лезу. Ночью 21-го я спал. Проснулся от того, что в усадьбе резко похолодало. Прям сквозняк ледяной пошел, хотя на дворе лето. Я пошел проверить усадьбу. Время было около двух  ночи.',
+            '— Смотрю - окна изнутри инеем покрылись, как зимой! А у стола доктора Морозова стоит этот молодой лаборант Дима и лихорадочно перебирает какие-то бумаги, руки синие, трясутся. Я спросил, что случилось, а он прикрикнул на меня, мол, иди спать, старик, не твое дело, эксперимент у них.',
+            '— Из подвала какой-то шум был слышен, как бубнеж какой то и свет как от лампы, ну думаю ученые, что с них взять. Дима этот на меня гаркнул, мол иди отсюда, ну я и пошел. Больше я ничего не видел.'
+        ]
+    },
+    {
+        name: 'Дмитрий Козлов',
+        status: 'Подозреваемый',
+        file: 'KOZLOV-D-0721',
+        city: 'Москва',
+        birth: '07.10.2002',
+        job: 'Лаборант, младший исследователь',
+        photo: 'pictures/face10.png',
+        role: 'Младший лаборант',
+        notes: [
+            '— 21 июля я ушел из лаборатории вместе с доктором Морозовым ровно в 23:00, когда он закрыл лабораторию. Мы вместе поехали на метро. Я вообще не понимаю, почему меня допрашивают. Я обычный студент, прохожу практику.',
+            '— Заметки этого Максима про «третью луну»? Да это бред сумасшедшего. Наш фонд занимается исключительно изучением фаз быстрого сна. Никаких ритуалов у нас нет. А круги со знаками на полу в подвале - это просто разметка для оборудования, чтобы датчики правильно выставлять.',
+            '— Часы на фото я никогда не видел. У меня свои - электронные, китайские. И к вещам директора я никогда не прикасался, он за такое сразу увольняет.'
+        ]
+    }
+];
+
+        const REQUIRED_SUSPECT_REVIEWS = Math.min(8, SUSPECTS.length);
+        const investigationState = {
+            suspectsUnlocked: false,
+            suspectsReviewed: false,
+            finalUnlocked: true,
+            viewedSuspects: new Set()
+        };
+
+        const CASE_QUESTIONS = [
+            { q:'Кто пропал в этом деле?', keywords:['максим','иванов'] },
+            { q:'Где произошёл последний стрим?', keywords:['усадьб','брюс'] },
+            { q:'Какой препарат нашли среди улик?', keywords:['somnio','сомнио','somnio-1'] },
+            { q:'Какой серийный номер был у ампулы?', keywords:['a14231c124','а14231с124'] },
+            { q:'Какой размер следа обуви обнаружили?', keywords:['43','сорок три'] },
+            { q:'Какой транспорт фигурирует у места происшествия?', keywords:['черн','майбах','машин','внедорож'] },
+            { q:'Какое точное время пропажи Максима в усадьбе и какая улика это показывает?', keywords: ['скрин', 'трансляция', '02:52', 'отпечат'] },
+            { q:'Какой знак или рисунок на полу усадьбы упоминается в записях блогера?', keywords: ['круг', 'разметк', 'знак', 'знаками', 'пол', 'подвал'] },
+            { q:'Кто из фонда «Три Луны» врет про свое алиби на момент стрима?', keywords: ['дмитрий', 'козлов', 'лаборант'] },
+            { q:'Кто на самом деле владеет усадьбой из подозреваемых?', keywords: ['виктор', 'корсаков', 'директор'] },
+            { q:'Кто из сотрудников фонда был на месте преступления за рулем транспортного средства?', keywords: ['андрей', 'волков', 'охран'] },
+            { q:'Какая аномалия на окнах усадьбы посреди лета выдает проведение тайного химического обряда?', keywords: ['иней', 'налед', 'окно'] },
+            { q:'Что пытались инсценировать преступники?', keywords:['исчезнов','побег','инсцен'] },
+            { q:'Какими официальными направлениями деятельности прикрывается фонд «Три Луны» согласно документам?', keywords: ['исследов', 'лаборатор', 'медицин', 'промышлен', 'инновац', 'технолог'] },
+            { q:'Какая подозрительная статья расходов на миллионы рублей в смете указывает на махинации с деньгами?', keywords: ['крио', 'охлажден', 'медиа', 'ресурс', 'т.л.', 'азот', 'хладагент'] },
+            { q:'Кто виновен в исчезновении Максима Иванова?', keywords: ['виктор', 'корсаков', 'директор', 'фонд', 'три луны.'] }
+        ];
+        const EVIDENCE = [
+  {
+    file:'evadience1.png',
+    title:'Улика #1: Последнее селфи',
+    tag:'Фото · Личное',
+    tagColor:'#ffcc00',
+    comments:[
+      { author:'Алёна Иванова', text:'Скинул мне за 40 минут до того, как вошёл в усадьбу. Выглядел абсолютно спокойным — всегда так перед новым выездом.' },
+      { author:'Следоваетль Соколов А.В.', text:'Временная метка: 23:17, 21 июля. Геолокация в метаданных отключена.' }
+    ]
+  },
+  {
+    file:'evadience2.png',
+    title:'Улика #2: Фотография подвала',
+    tag:'Галерея · Фото',
+    tagColor:'#ff3b30',
+    comments:[
+      { author:'Алёна Иванова', text:'Он прислал мне это фото в ночь своего исчезновения' }
+    ]
+  },
+  {
+    file:'evadience23.png',
+    title:'Улика #3: Следы протекторов',
+    tag:'Пресса · Расследование',
+    tagColor:'#ff9500',
+    comments:[
+      { author:'Следоваетль Соколов А.В', text:'Свежие отпечатки автомобильных шин на грунтовой дороге около усадьбы. Обнаружен след резкого торможения или разворота.' },
+      { author:'Алёна Иванова', text:'Мой друг автомеханик сказал что следы от тяжелой большой машины' }
+    ]
+  },
+  {
+    file:'evadience22.png',
+    title:'Улика #4: Рюкзак и фонарь',
+    tag:'Вещдок · Улика',
+    tagColor:'#30d158',
+    comments:[
+      { author:'Следоваетль Соколов А.В', text:'Обнаружена в подвале в 3,5 м от штатива. Владелец предположительно пропавший Максим' },
+      { author:'Алёна Иванова', text:'Макс никогда бы не оставил свои вещи, тем более там было дорогостоящее оборудование.' }
+    ]
+  },
+  {
+    file:'evadience5.png',
+    title:'Улика #5: Скриншот со стрима',
+    tag:'Стрим · Скриншот',
+    tagColor:'#64d2ff',
+    comments:[
+      { author:'Следоваетль Соколов А.В', text:'Скриншот сделан самим пострадавшим во время последнего стрима, которое показывает иней на окне' },
+      { author:'Алёна Иванова', text:'Он отправил мне этот скриншот, так как у него были проблемы с сетью' }
+    ]
+  },
+  {
+    file:'evadience6.png',
+    title:'Улика #6: Ритуальное место',
+    tag:'Символика · Ритуал',
+    tagColor:'#ff3b30',
+    comments:[
+      { author:'Следоваетль Соколов А.В', text:'Общий вид алтарной зоны в глубине подвала. На полу расставлены свечи, в центре зафиксированы следы угля, воска и вещи пропавшего.' },
+      { author:'Алёна Иванова', text:'Макс никогда не интересовался мистикой, что там происходило?' }
+    ]
+  },
+  {
+    file:'evadience7.png',
+    title:'Улика #7: Карманные часы',
+    tag:'Антиквариат · Отпечатки',
+    tagColor:'#ff6b6b',
+    comments:[
+      { author:'Следоваетль Соколов А.В', text:'Серебряные карманные часы XVIII в., найденные на месте. На крышке обнаружены смазанные отпечатки пальцев, зафиксированные экспертами.' },
+      { author:'Алёна Иванова', text:'Он никогда не интересовался антиквариатом.' }
+    ]
+  },
+  {
+    file:'evadience8.png',
+    title:'Улика #8: Заметки',
+    tag:'Записи · Личное',
+    tagColor:'#64d2ff',
+    comments:[
+      { author:'Следоваетль Соколов А.В', text:'Рукописные листы из блокнота потерпевшего. Текст содержит обрывочные записи, формулы и схемы, приобщенные к материалам экспертизы.' },
+          { author:'Алёна Иванова', text:' Он не сошел с ума! По поиску в гугле на слова "Третья луна" выдает список мифов и легенд. Среди них есть фонд ООО Третья Луна.' }
+    ]
+  },
+  {
+    file:'evadience9.png',
+    title:'Улика #9: Записка',
+    tag:'Документ · Личное',
+    tagColor:'#64d2ff',
+    comments:[
+      { author:'Следоваетль Соколов А.В', text:'Обрывок страницы с рукописным текстом. Обнаружен криминалистами среди вещей пропавшего.' },
+      { author:'Алёна Иванова', text:'Его блокнот для заметок! Он всегда брал его на выезды.' }
+    ]
+  },
+  {
+    file:'evadience10.png',
+    title:'Улика #10: Билет на поезд',
+    tag:'Транспорт · Улика',
+    tagColor:'#64d2ff',
+    comments:[
+      { author:'Следоваетль Соколов А.В', text:'Электронный билет на «Сапсан» по маршруту Москва - Санкт-Петербург. Оформлен на имя Максима Иванова.' },
+      { author:'Алёна Иванова', text:'Они думают что это его билет и он сам подстроил свое похищение ради хайпа!' }
+    ]
+  },
+  {
+    file: 'evadience11.jpg',
+    title: 'Улика #11: След от обуви',
+    tag: 'Криминалистика · Улика',
+    tagColor: '#30d158',
+    comments: [
+      { author: 'Следоваетль Соколов А.В', text: 'Крупный план подошвы 43 размера на грунте рядом с использованным шприцем ApexMed и пустой ампулой SomnusMedica А14231С124.' },
+      { author: 'Гугл', text: 'По поиску в гугле первой попадается карточка этого препарата: <a href="#" onclick="openProductPage(); return false;" style="color: #0A84FF; text-decoration: underline;">Открыть</a>.' }
+    ]
+  },
+  {
+    file:'evadience26.png',
+    title:'Улика #12: Договор купли продажи',
+    tag:'Документ · Улика',
+    tagColor:'#64d2ff',
+    comments:[
+      { author:'Нотариус Сидоренко И.Н.', text:'Договор купли продажи имущества' }
+    ]
+  },
+  {
+    file:'evadience21.png',
+    title:'Улика #13: Отчет о деятельности фонда',
+    tag:'Документ · Улика',
+    tagColor:'#64d2ff',
+    comments:[
+      { author:'Нотариус Сидоренко И.Н.', text:'Распечатка данных о деятельности фонда' }
+    ]
+  },
+  {
+    file:'evadience14.png',
+    title:'Улика #14: Публикация статьи',
+    tag:'Статья · Медиа',
+    tagColor:'#64d2ff',
+    comments:[
+      { author:'Алёна Иванова', text:'Скриншот интернет-страницы с заголовком о загадочном исчезновении во время стрима, я тебе отправляла статью.' }
+    ]
+  },
+  {
+    file:'evadience15.png',
+    title:'Улика #15: Усадьба Брюса',
+    tag:'Локация · Усадьба',
+    tagColor:'#ff3b30',
+    comments:[
+      { author:'Следоваетль Соколов А.В', text:'Общий план фасада усадьбы Брюса при дневном освещении. Точка съемки - со стороны подъездной аллеи.' },
+      { author:'Алёна Иванова', text:'Максим не пошел бы на охраняемый обьект не согласовав бы сьемку' }
+    ]
+  },
+  {
+    file:'evadience16.jpg',
+    title:'Улика #16: Старый фонтан',
+    tag:'Локация · Усадьба',
+    tagColor:'#ff3b30',
+    comments:[
+      { author:'Следоваетль Соколов А.В', text:'Заброшенный декоративный бассейн или фонтан перед центральным входом в заброшенную усадьбу.' }
+    ]
+  },
+  {
+    file:'evadience24.png',
+    title:'Улика #17: Скриншот в момент исчезновения от подписчика',
+    tag:'Скриншот · Стрим',
+    tagColor:'#64d2ff',
+    comments:[
+      { author:'Следоваетль Соколов А.В', text:'Скриншот сделан подписчиком пострадавшего, на скриншоте видно, что некто входит в кадр' },
+      { author:'Алёна Иванова', text:'После этого момента он перестал выходить на связь' }
+    ]
+  }
+];
+
+        let currentLbIndex = 0;
+        let currentZoom = 1;
+        let currentPanX = 0;
+        let currentPanY = 0;
+        let isLightboxPanning = false;
+        let panStartX = 0;
+        let panStartY = 0;
+
+        function setDetectiveChromeVisible(showSocialChrome) {
+            const navbar = document.querySelector('.navbar');
+            const floatingChat = document.getElementById('chat-window');
+
+            if (navbar) {
+                navbar.style.display = showSocialChrome ? 'flex' : 'none';
+            }
+
+            if (floatingChat) {
+                floatingChat.style.setProperty('display', showSocialChrome ? 'flex' : 'none', 'important');
+            }
+        }
+
+        function syncDetectiveMiniChat() {
+            const mainChatArea = document.getElementById('msger-chat-area');
+            const miniChat = document.getElementById('detective-mini-chat');
+            if (!mainChatArea || !miniChat) return;
+
+            miniChat.innerHTML = '';
+            mainChatArea.querySelectorAll('.msg-row').forEach(msg => {
+                const bubble = msg.querySelector('.msg-bubble');
+                if (!bubble) return;
+
+                const logRow = document.createElement('div');
+                const isIncoming = msg.classList.contains('incoming');
+                logRow.innerHTML = isIncoming
+                    ? `<span style="color: #0084ff; font-weight:bold;">Алёна:</span> ${bubble.innerHTML}`
+                    : `<span style="color: #ffcc00; font-weight:bold;">Вы:</span> ${bubble.innerText}`;
+                logRow.style.marginBottom = '6px';
+                miniChat.appendChild(logRow);
+            });
+            miniChat.scrollTop = miniChat.scrollHeight;
+        }
+
+
+        function openSuspectsGallery() {
+            if (!investigationState.suspectsUnlocked) {
+                appendAlenaMessage('Я ещё не получила список людей, связанных с фондом и поставками. Давай сначала дочитаем переписку.');
+                return;
+            }
+            investigationState.suspectsReviewed = true;
+            switchDetectiveTab('suspects');
+            setTimeout(addSuspectAlibiMarkers, 150);
+        }
+
+        function closeSuspectsGallery() {
+            switchDetectiveTab('detective');
+        }
+
+        function renderSuspectsGrid() {
+            const grid = document.getElementById('suspects-grid');
+            if (!grid || grid.dataset.rendered === 'true') return;
+            grid.innerHTML = '';
+            SUSPECTS.forEach((person, index) => {
+                const card = document.createElement('button');
+                card.type = 'button';
+                card.className = 'suspect-card';
+                card.onclick = () => openSuspectProfile(index);
+                card.innerHTML = `
+                    <div class="suspect-photo"><img src="${person.photo}" alt="${person.name}" onerror="this.remove(); this.parentElement.textContent='👤';"></div>
+                    <div class="suspect-card-body">
+                        <span class="suspect-status">${person.status}</span>
+                        <div class="suspect-name">${person.name}</div>
+                        <div class="suspect-role">${person.role}</div>
+                    </div>`;
+                grid.appendChild(card);
+            });
+            grid.dataset.rendered = 'true';
+        }
+
+        function openSuspectProfile(index) {
+            const person = SUSPECTS[index];
+            if (!person) return;
+            investigationState.viewedSuspects.add(index);
+            if (investigationState.viewedSuspects.size >= REQUIRED_SUSPECT_REVIEWS) unlockFinalCase();
+            const photoBox = document.querySelector('.suspect-dossier-photo');
+            if (photoBox) {
+                photoBox.innerHTML = '<img id="suspect-modal-img" src="' + person.photo + '" alt="Фото подозреваемого" onerror="this.remove(); this.parentElement.textContent=\'Фото не найдено\';">';
+            }
+            document.getElementById('suspect-modal-status').textContent = person.status;
+            document.getElementById('suspect-modal-file').textContent = person.file;
+            document.getElementById('suspect-modal-city').textContent = person.city;
+            document.getElementById('suspect-modal-name').textContent = person.name;
+            document.getElementById('suspect-modal-birth').textContent = person.birth;
+            document.getElementById('suspect-modal-job').textContent = person.job;
+            document.getElementById('suspect-modal-notes').innerHTML = person.notes.map(line => '<p>' + line + '</p>').join('');
+            document.getElementById('suspect-lightbox').style.display = 'flex';
+        }
+
+        function closeSuspectProfile() {
+            document.getElementById('suspect-lightbox').style.display = 'none';
+        }
+        function renderEvidenceGrid() {
+            const grid = document.getElementById('evidence-grid');
+            if (!grid || grid.dataset.rendered === 'true') return;
+
+            grid.innerHTML = '';
+            EVIDENCE.forEach((ev, index) => {
+                const card = document.createElement('button');
+                card.type = 'button';
+                card.onclick = () => openLightbox(index);
+                card.style.cssText = 'background:#242424; border:1px solid #3a3a3a; border-radius:8px; overflow:hidden; padding:0; text-align:left; color:#fff; cursor:pointer; box-shadow:0 8px 22px rgba(0,0,0,0.25);';
+                card.innerHTML = `
+                    <div style="aspect-ratio:4/3; background:#111; overflow:hidden;">
+                        <img src="pictures/${ev.file}" alt="${ev.title}" style="width:100%; height:100%; object-fit:cover; display:block;">
+                    </div>
+                    <div style="padding:12px; display:flex; flex-direction:column; gap:8px;">
+                        <span style="align-self:flex-start; color:#111; background:${ev.tagColor}; border-radius:999px; padding:3px 8px; font-size:11px; font-weight:700;">${ev.tag}</span>
+                        <strong style="font-size:14px; line-height:1.25; color:#f5f5f5;">${ev.title}</strong>
+                    </div>`;
+                grid.appendChild(card);
+            });
+            grid.dataset.rendered = 'true';
+        }
+
+        function openEvidenceGallery() {
+            switchDetectiveTab('evidence');
+        }
+
+        function switchDetectiveTab(targetScreen) {
+            const tabs = {
+                messenger: document.getElementById('tab-messenger'),
+                detective: document.getElementById('tab-detective'),
+                evidence: document.getElementById('tab-evidence'),
+                product: document.getElementById('tab-product'),
+                suspects: document.getElementById('tab-suspects'),
+                final: document.getElementById('case-final-btn')
+            };
+            const screens = {
+                feed: document.getElementById('screen-feed'),
+                messenger: document.getElementById('screen-messenger'),
+                detective: document.getElementById('screen-detective'),
+                evidence: document.getElementById('screen-evidence'),
+                product: document.getElementById('screen-product'),
+                suspects: document.getElementById('screen-suspects'),
+                final: document.getElementById('screen-final')
+            };
+
+            Object.values(tabs).forEach(tab => tab && tab.classList.remove('active'));
+            Object.values(screens).forEach(screen => screen && screen.classList.add('hidden'));
+
+            if (targetScreen === 'messenger') {
+                if (tabs.messenger) tabs.messenger.classList.add('active');
+                setDetectiveChromeVisible(true);
+
+                if (screens.messenger && screens.messenger.dataset.opened === 'true') {
+                    screens.messenger.classList.remove('hidden');
+                    const floatingChat = document.getElementById('chat-window');
+                    if (floatingChat) floatingChat.style.setProperty('display', 'none', 'important');
+                } else if (screens.feed) {
+                    screens.feed.classList.remove('hidden');
+                }
+                return;
+            }
+
+            setDetectiveChromeVisible(false);
+
+            if (targetScreen === 'detective') {
+                if (tabs.detective) tabs.detective.classList.add('active');
+                if (screens.detective) screens.detective.classList.remove('hidden');
+                syncDetectiveMiniChat();
+                setTimeout(initDetectiveMap, 100);
+                return;
+            }
+
+            if (targetScreen === 'evidence') {
+                if (tabs.evidence) {
+                    tabs.evidence.classList.remove('hidden');
+                    tabs.evidence.classList.add('active');
+                }
+                if (screens.evidence) screens.evidence.classList.remove('hidden');
+                renderEvidenceGrid();
+                return;
+            }
+
+            if (targetScreen === 'suspects') {
+                if (tabs.suspects) {
+                    tabs.suspects.classList.remove('hidden');
+                    tabs.suspects.classList.add('active');
+                }
+                if (screens.suspects) screens.suspects.classList.remove('hidden');
+                renderSuspectsGrid();
+                return;
+            }
+
+            if (targetScreen === 'final') {
+                if (screens.final) screens.final.classList.remove('hidden');
+                renderFinalQuestions();
+                return;
+            }
+
+            if (targetScreen === 'product') {
+                if (tabs.product) {
+                    tabs.product.classList.remove('hidden');
+                    tabs.product.classList.add('active');
+                }
+                if (screens.product) screens.product.classList.remove('hidden');
+            }
+        }
+
+
+
+        function openFinalCasePage() {
+            investigationState.finalUnlocked = true;
+            refreshInvestigationLocks();
+            switchDetectiveTab('final');
+            renderFinalQuestions();
+        }
+
+        function renderFinalQuestions() {
+            const box = document.getElementById('case-questions');
+            if (!box || box.dataset.rendered === 'true') return;
+            const score = document.getElementById('case-score');
+            if (score) score.textContent = '0 / ' + CASE_QUESTIONS.length;
+            box.innerHTML = '';
+            CASE_QUESTIONS.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'case-question-card';
+                card.id = 'case-q-' + index;
+                card.innerHTML = `<div><label>${index + 1}. ${item.q}</label><input id="case-answer-${index}" type="text" placeholder="Введите ответ или ключевую версию..."></div><div class="case-check" id="case-check-${index}">?</div>`;
+                box.appendChild(card);
+            });
+            box.dataset.rendered = 'true';
+        }
+
+        function normalizeCaseAnswer(text) {
+            return (text || '')
+                .toString()
+                .toLowerCase()
+                .replace(/ё/g, 'е')
+                .normalize('NFKD')
+                .replace(/\p{M}/gu, '')
+                .replace(/[^\p{L}\p{N}]+/gu, ' ')
+                .trim();
+        }
+
+        function openCaseCompleteModal() {
+            const modal = document.getElementById('case-complete-modal');
+            if (!modal) return;
+            modal.classList.add('show');
+            modal.style.display = 'flex';
+        }
+
+        function closeCaseCompleteModal() {
+            const modal = document.getElementById('case-complete-modal');
+            if (!modal) return;
+            modal.classList.remove('show');
+            modal.style.display = 'none';
+        }
+
+        function checkCaseAnswers() {
+            let correct = 0;
+            CASE_QUESTIONS.forEach((item, index) => {
+                const input = document.getElementById('case-answer-' + index);
+                const card = document.getElementById('case-q-' + index);
+                const check = document.getElementById('case-check-' + index);
+                const value = normalizeCaseAnswer(input ? input.value : '');
+                const ok = item.keywords.some(word => {
+                    const key = normalizeCaseAnswer(word);
+                    return key && value.includes(key);
+                });
+                if (card) card.classList.toggle('correct', ok);
+                if (check) check.textContent = ok ? '✓' : '?';
+                if (ok) correct++;
+            });
+            const score = document.getElementById('case-score');
+            if (score) score.textContent = correct + ' / ' + CASE_QUESTIONS.length;
+            if (correct === CASE_QUESTIONS.length) {
+                openCaseCompleteModal();
+            }
+        }
+        function openProductPage() {
+            closeLightbox();
+            switchDetectiveTab('product');
+            setTimeout(() => {
+                const page = document.getElementById('screen-product');
+                if (page) page.scrollTop = 0;
+            }, 30);
+        }
+
+        function shareSomnioContactsWithAlena() {
+            const btn = document.getElementById('share-somnio-btn');
+            if (btn) {
+                btn.textContent = '✓ Данные пересланы Алёне';
+                btn.classList.add('sent');
+                btn.disabled = true;
+            }
+
+            switchDetectiveTab('messenger');
+            appendPlayerMessage('Смотри, я нашла контакты SomnioMedica: sales@somniomedica.com, info@somniomedica.com и телефон +44 20 7946 0958. Надо связаться с ними и спросить по ампуле A14231C124.');
+            setTimeout(() => {
+                appendAlenaMessage('Спасибо! Я им сейчас напишу. Если эта ампула проходила через их продажи, они должны хотя бы подтвердить учреждение или врача.');
+                setTimeout(() => {
+                    appendAlenaMessage('Вот скрин письма, которое я отправила:<br><img src="pictures/evadience19.png" alt="Скриншот письма в SomnioMedica" class="chat-screenshot" style="max-width: 100%; border-radius: 6px; margin-top: 8px; border: 1px solid #333;">');
+            showResponseButtons([{ text: 'Молодец. Ты им позвонила?', action: 'somnio_call' }]);
+        }, 900);
+            }, 900);
+        }
+
+        function continueSomnioDialogue(action) {
+            clearButtons();
+            if (action === 'somnio_call') {
+                appendPlayerMessage('Что за фонд? Ты с ними связалась?');
+                setTimeout(() => {
+                    appendAlenaMessage('Вот, глянь, что я им написала:<br><img src="pictures/evadience17.png" alt="Переписка в мессенджере" class="chat-screenshot" style="max-width: 100%; border-radius: 6px; margin-top: 8px; border: 1px solid #333;">');
+            showResponseButtons([{ text: 'И что дальше они пишут?', action: 'somnio_threat' }]);
+        }, 900);
+            }
+            if (action === 'somnio_threat') {
+                appendPlayerMessage('И что дальше они пишут?');
+                setTimeout(() => {
+                    appendAlenaMessage('После моих просьб все таки дать информацию тон резко изменился. Они начали угрожать: написали, что мой запрос зафиксирован, а разглашение данных по медицинским поставкам может быть передано их юристам. Но самое странное — они спросили, кто именно дал мне номер A14231C124. Значит, идем в правильном направлении. <br><img src="pictures/evadience18.png" alt="Скриншот угроз" class="chat-screenshot" style="max-width: 100%; border-radius: 6px; margin-top: 8px; border: 1px solid #333;">');
+                    setTimeout(() => { appendAlenaMessage('Я ещё нашла связанный фонд и список людей, которые могли работать с этой поставкой. Открываю тебе картотеку лиц дела в кабинете детектива - проверь их показания и где каждый был в ночь преступления.'); unlockSuspectsSection(); }, 900);
+                }, 900);
+            }
+        }
+        function closeEvidenceGallery() {
+            switchDetectiveTab('detective');
+        }
+
+        function openLightbox(index) {
+            currentLbIndex = index;
+            currentZoom = 1;
+            currentPanX = 0;
+            currentPanY = 0;
+            renderLightbox();
+            document.getElementById('evidence-lightbox').style.display = 'flex';
+        }
+
+        function applyLightboxTransform() {
+            const img = document.getElementById('lb-img');
+            const wrap = document.getElementById('lb-img-wrap');
+            if (!img) return;
+
+            if (currentZoom <= 1) {
+                currentPanX = 0;
+                currentPanY = 0;
+            }
+
+            img.style.transform = 'translate(' + currentPanX + 'px, ' + currentPanY + 'px) scale(' + currentZoom + ')';
+            img.style.cursor = currentZoom > 1 ? 'grab' : 'zoom-in';
+            if (wrap) wrap.style.cursor = currentZoom > 1 ? 'grab' : 'zoom-in';
+        }
+
+        function renderLightbox() {
+            const ev = EVIDENCE[currentLbIndex];
+            currentPanX = 0;
+            currentPanY = 0;
+            document.getElementById('lb-img').src = 'pictures/' + ev.file;
+            applyLightboxTransform();
+            document.getElementById('lb-title').textContent = ev.title;
+            document.getElementById('lb-counter').textContent = (currentLbIndex + 1) + ' / ' + EVIDENCE.length;
+            const commentsEl = document.getElementById('lb-comments');
+            commentsEl.innerHTML = '';
+            ev.comments.forEach(c => {
+                const row = document.createElement('div');
+                row.style.cssText = 'display:flex; flex-direction:column; gap:2px;';
+                row.innerHTML = '<span style="font-size:12px; font-weight:bold; color:#ffcc00;">' + c.author + '</span>'
+                              + '<span style="font-size:13px; color:#ddd; line-height:1.4;">' + c.text + '</span>';
+                commentsEl.appendChild(row);
+            });
+        }
+
+        function closeLightbox() { document.getElementById('evidence-lightbox').style.display = 'none'; }
+
+        function lbNavigate(dir) {
+            currentLbIndex = (currentLbIndex + dir + EVIDENCE.length) % EVIDENCE.length;
+            currentZoom = 1;
+            renderLightbox();
+        }
+
+        function lbZoom(delta) {
+            currentZoom = Math.min(4, Math.max(0.4, currentZoom + delta));
+            applyLightboxTransform();
+        }
+
+        function lbResetZoom() {
+            currentZoom = 1;
+            currentPanX = 0;
+            currentPanY = 0;
+            applyLightboxTransform();
+        }
+
+        document.addEventListener('keydown', e => {
+            if (document.getElementById('evidence-lightbox').style.display !== 'flex') return;
+            if (e.key === 'Escape') { closeLightbox(); closeSuspectProfile(); }
+            if (e.key === 'ArrowRight') lbNavigate(1);
+            if (e.key === 'ArrowLeft')  lbNavigate(-1);
+            if (e.key === '+')          lbZoom(0.25);
+            if (e.key === '-')          lbZoom(-0.25);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            refreshInvestigationLocks();
+            const wrap = document.getElementById('lb-img-wrap');
+            if (wrap) {
+                wrap.addEventListener('wheel', e => {
+                    e.preventDefault();
+                    lbZoom(e.deltaY < 0 ? 0.15 : -0.15);
+                }, { passive: false });
+
+                wrap.addEventListener('pointerdown', e => {
+                    if (currentZoom <= 1) return;
+                    isLightboxPanning = true;
+                    panStartX = e.clientX - currentPanX;
+                    panStartY = e.clientY - currentPanY;
+                    wrap.setPointerCapture(e.pointerId);
+                    wrap.style.cursor = 'grabbing';
+                    const img = document.getElementById('lb-img');
+                    if (img) img.style.cursor = 'grabbing';
+                });
+
+                wrap.addEventListener('pointermove', e => {
+                    if (!isLightboxPanning) return;
+                    currentPanX = e.clientX - panStartX;
+                    currentPanY = e.clientY - panStartY;
+                    applyLightboxTransform();
+                });
+
+                const stopPan = e => {
+                    if (!isLightboxPanning) return;
+                    isLightboxPanning = false;
+                    try { wrap.releasePointerCapture(e.pointerId); } catch (_) {}
+                    applyLightboxTransform();
+                };
+
+                wrap.addEventListener('pointerup', stopPan);
+                wrap.addEventListener('pointercancel', stopPan);
+                wrap.addEventListener('pointerleave', stopPan);
+            }
+        });
+    </script>
+
+</body>
+</html>
